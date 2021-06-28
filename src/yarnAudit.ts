@@ -119,6 +119,16 @@ export type NpmVersionInfo = {
   _hasShrinkwrap: boolean;
 }
 
+export type NpmList = {
+  name: string
+  version: string
+  dependencies: {
+    [key: string]: {
+      version: string
+      resolved: string
+    }
+  }
+}
 export interface YarnInfo {
   type: string;
   data: {
@@ -159,6 +169,11 @@ type PackageInfo = {
   dependencies: {
     [key: string]: string
   }
+}
+
+type WorkspacePackage = {
+  name: string
+  workspace?: string
 }
 
 type PackageVersion = [
@@ -209,6 +224,27 @@ export async function getYarnAudits(): Promise<Array<YarnAudit>> {
 
 export async function getYarnInfo(): Promise<YarnInfo> {
   return execute('yarn list --json', true) as Promise<YarnInfo>
+}
+
+export async function getTopLevelPackages(prefix?: string): Promise<NpmList> {
+  return execute(`${prefix} npm list --json`, true) as Promise<NpmList>
+}
+
+export async function buildTopLevelPackageList(): Promise<Array<WorkspacePackage>> {
+  const topList: Array<WorkspacePackage> = []
+  const baseNpmList = await getTopLevelPackages()
+  await Promise.all(Object.keys(baseNpmList.dependencies).map(async key => {
+    if (baseNpmList.dependencies[key].resolved.startsWith('file')) {
+      const workspace = baseNpmList.dependencies[key].resolved.replace(/^file:\.\.\//, '')
+      const workspaceList = await getTopLevelPackages(`cd ${baseNpmList.dependencies[key].resolved.replace(/^file/, '')}`)
+      Object.keys(workspaceList.dependencies).forEach(workspaceKey => {
+        topList.push({ name: workspaceKey, workspace })
+      })
+    } else {
+      topList.push({ name: key })
+    }
+  }))
+  return topList
 }
 
 // export function getYarnInfoPackages (yarnInfo: YarnInfo): Array<string> {
