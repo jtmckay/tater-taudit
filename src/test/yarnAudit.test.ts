@@ -8,7 +8,7 @@ import {
   fillTreeViability,
   sortFlatDependentTree
 } from '../yarnAudit'
-import { testFlatTree, testYarnAudit } from './testData'
+import { testFlatTree, testNpmList, testYarnAudit } from './testData'
 
 describe('isValidVersion', () => {
   describe('when given a major version higher than acceptable', () => {

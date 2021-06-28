@@ -226,25 +226,33 @@ export async function getYarnInfo(): Promise<YarnInfo> {
   return execute('yarn list --json', true) as Promise<YarnInfo>
 }
 
-export async function getTopLevelPackages(prefix?: string): Promise<NpmList> {
-  return execute(`${prefix} npm list --json`, true) as Promise<NpmList>
+export async function getNpmList(prefix?: string): Promise<NpmList> {
+  return execute(`${prefix ? `${prefix} ` : ''}npm list --json`, true) as Promise<NpmList>
 }
 
-export async function buildTopLevelPackageList(): Promise<Array<WorkspacePackage>> {
-  const topList: Array<WorkspacePackage> = []
-  const baseNpmList = await getTopLevelPackages()
+export async function buildTopLevelPackageList(): Promise<{npmList: NpmList, workspaceList: Array<WorkspacePackage>}> {
+  const workspaceList: Array<WorkspacePackage> = []
+  const baseNpmList = await getNpmList()
+  const npmList = {...baseNpmList}
   await Promise.all(Object.keys(baseNpmList.dependencies).map(async key => {
-    if (baseNpmList.dependencies[key].resolved.startsWith('file')) {
+    if (baseNpmList.dependencies[key].resolved?.startsWith('file')) {
       const workspace = baseNpmList.dependencies[key].resolved.replace(/^file:\.\.\//, '')
-      const workspaceList = await getTopLevelPackages(`cd ${baseNpmList.dependencies[key].resolved.replace(/^file/, '')}`)
-      Object.keys(workspaceList.dependencies).forEach(workspaceKey => {
-        topList.push({ name: workspaceKey, workspace })
+      const workspaceNpmList = await getNpmList(`cd ${baseNpmList.dependencies[key].resolved.replace(/^file:\./, '')} &&`)
+      Object.keys(workspaceNpmList.dependencies).forEach(workspaceKey => {
+        workspaceList.push({ name: workspaceKey, workspace })
       })
+      delete npmList.dependencies[key]
+      Object.assign(npmList, workspaceNpmList)
+    } else if (!baseNpmList.dependencies[key].resolved) {
+      return
     } else {
-      topList.push({ name: key })
+      workspaceList.push({ name: key })
     }
   }))
-  return topList
+  return {
+    npmList,
+    workspaceList
+  }
 }
 
 // export function getYarnInfoPackages (yarnInfo: YarnInfo): Array<string> {

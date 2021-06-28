@@ -52,7 +52,7 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from) {
     return to;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.execute = exports.sortFlatDependentTree = exports.flattenDependentTree = exports.fillTreeViability = exports.fillViableVersions = exports.isItGreaterOrEqual = exports.divideAndConquer = exports.getVersionSearchTextForLatestSameMajorVersion = exports.getVersions = exports.getNpmPackageInfo = exports.buildTree = exports.getYarnInfo = exports.getYarnAudits = exports.isValidVersion = void 0;
+exports.execute = exports.sortFlatDependentTree = exports.flattenDependentTree = exports.fillTreeViability = exports.fillViableVersions = exports.isItGreaterOrEqual = exports.divideAndConquer = exports.getVersionSearchTextForLatestSameMajorVersion = exports.getVersions = exports.getNpmPackageInfo = exports.buildTree = exports.buildTopLevelPackageList = exports.getNpmList = exports.getYarnInfo = exports.getYarnAudits = exports.isValidVersion = void 0;
 var exec = require('child_process').exec;
 var localCache = {};
 function cleanPackageVersion(version) {
@@ -115,6 +115,66 @@ function getYarnInfo() {
     });
 }
 exports.getYarnInfo = getYarnInfo;
+function getNpmList(prefix) {
+    return __awaiter(this, void 0, void 0, function () {
+        return __generator(this, function (_a) {
+            return [2 /*return*/, execute((prefix ? prefix + " " : '') + "npm list --json", true)];
+        });
+    });
+}
+exports.getNpmList = getNpmList;
+function buildTopLevelPackageList() {
+    return __awaiter(this, void 0, void 0, function () {
+        var workspaceList, baseNpmList, npmList;
+        var _this = this;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    workspaceList = [];
+                    return [4 /*yield*/, getNpmList()];
+                case 1:
+                    baseNpmList = _a.sent();
+                    npmList = __assign({}, baseNpmList);
+                    return [4 /*yield*/, Promise.all(Object.keys(baseNpmList.dependencies).map(function (key) { return __awaiter(_this, void 0, void 0, function () {
+                            var workspace_1, workspaceNpmList;
+                            var _a;
+                            return __generator(this, function (_b) {
+                                switch (_b.label) {
+                                    case 0:
+                                        if (!((_a = baseNpmList.dependencies[key].resolved) === null || _a === void 0 ? void 0 : _a.startsWith('file'))) return [3 /*break*/, 2];
+                                        workspace_1 = baseNpmList.dependencies[key].resolved.replace(/^file:\.\.\//, '');
+                                        return [4 /*yield*/, getNpmList("cd " + baseNpmList.dependencies[key].resolved.replace(/^file:\./, '') + " &&")];
+                                    case 1:
+                                        workspaceNpmList = _b.sent();
+                                        Object.keys(workspaceNpmList.dependencies).forEach(function (workspaceKey) {
+                                            workspaceList.push({ name: workspaceKey, workspace: workspace_1 });
+                                        });
+                                        delete npmList.dependencies[key];
+                                        Object.assign(npmList, workspaceNpmList);
+                                        return [3 /*break*/, 3];
+                                    case 2:
+                                        if (!baseNpmList.dependencies[key].resolved) {
+                                            return [2 /*return*/];
+                                        }
+                                        else {
+                                            workspaceList.push({ name: key });
+                                        }
+                                        _b.label = 3;
+                                    case 3: return [2 /*return*/];
+                                }
+                            });
+                        }); }))];
+                case 2:
+                    _a.sent();
+                    return [2 /*return*/, {
+                            npmList: npmList,
+                            workspaceList: workspaceList
+                        }];
+            }
+        });
+    });
+}
+exports.buildTopLevelPackageList = buildTopLevelPackageList;
 // export function getYarnInfoPackages (yarnInfo: YarnInfo): Array<string> {
 //   const packages = new Set<string>()
 //   yarnInfo.data.trees?.forEach(tree => {

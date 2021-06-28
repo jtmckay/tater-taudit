@@ -1,8 +1,11 @@
 {
   "name": "tater-audit",
-  "version": "1.0.0",
+  "version": "0.0.2",
   "description": "Security vulnerability assistant",
   "main": "dist/src/index.js",
+  "bin": {
+    "tater-audit": "./dist/src/index.js"
+  },
   "scripts": {
     "test": "jest --watch",
     "build": "rm -rf dist && npx tsc",

@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.testFlatTree = exports.testYarnAudit = void 0;
+exports.testNpmList = exports.testFlatTree = exports.testYarnAudit = void 0;
 exports.testYarnAudit = {
     "type": "auditAdvisory",
     "data": {
@@ -1388,3 +1388,233 @@ exports.testFlatTree = [
         ]
     }
 ];
+exports.testNpmList = {
+    "version": "1.0.0",
+    "name": "communications",
+    "dependencies": {
+        "@pluralsight/ps-bunyan-serializers": {
+            "version": "0.2.0",
+            "resolved": "https://repository.vnerd.com/artifactory/api/npm/npm-pluralsight/@pluralsight/ps-bunyan-serializers/-/@pluralsight/ps-bunyan-serializers-0.2.0.tgz"
+        },
+        "@pluralsight/ps-dvs-node": {
+            "version": "3.1.0-beta.9",
+            "resolved": "http://repository.vnerd.com/artifactory/api/npm/npm-pluralsight/@pluralsight/ps-dvs-node/-/@pluralsight/ps-dvs-node-3.1.0-beta.9.tgz"
+        },
+        "@pluralsight/ps-kafka-node": {
+            "version": "2.5.1",
+            "resolved": "https://repository.vnerd.com/artifactory/api/npm/npm-pluralsight/@pluralsight/ps-kafka-node/-/@pluralsight/ps-kafka-node-2.5.1.tgz"
+        },
+        "@pluralsight/ps-redis-node": {
+            "version": "1.1.1",
+            "resolved": "https://repository.vnerd.com/artifactory/api/npm/npm-pluralsight/@pluralsight/ps-redis-node/-/ps-redis-node-1.1.1.tgz"
+        },
+        "@pluralsight/ps-vault-kubernetes": {
+            "version": "1.0.1",
+            "resolved": "https://repository.vnerd.com/artifactory/api/npm/npm-pluralsight/@pluralsight/ps-vault-kubernetes/-/@pluralsight/ps-vault-kubernetes-1.0.1.tgz"
+        },
+        "@pluralsight/ps-web-logging": {
+            "version": "0.3.1",
+            "resolved": "https://repository.vnerd.com/artifactory/api/npm/npm-pluralsight/@pluralsight/ps-web-logging/-/@pluralsight/ps-web-logging-0.3.1.tgz"
+        },
+        "@types/amqplib": {
+            "version": "0.5.13",
+            "resolved": "https://repository.vnerd.com/artifactory/api/npm/npm-pluralsight/@types/amqplib/-/amqplib-0.5.13.tgz"
+        },
+        "@types/chai-as-promised": {
+            "version": "7.1.2",
+            "resolved": "http://repository.vnerd.com/artifactory/api/npm/npm-pluralsight/@types/chai-as-promised/-/chai-as-promised-7.1.2.tgz"
+        },
+        "@types/chai": {
+            "version": "4.2.10",
+            "resolved": "http://repository.vnerd.com/artifactory/api/npm/npm-pluralsight/@types/chai/-/chai-4.2.10.tgz"
+        },
+        "@types/mocha": {
+            "version": "7.0.2",
+            "resolved": "http://repository.vnerd.com/artifactory/api/npm/npm-pluralsight/@types/mocha/-/mocha-7.0.2.tgz"
+        },
+        "@types/node": {
+            "version": "10.14.22",
+            "resolved": "http://repository.vnerd.com/artifactory/api/npm/npm-pluralsight/@types/node/-/node-10.14.22.tgz"
+        },
+        "@types/pg": {
+            "version": "7.14.7",
+            "resolved": "https://repository.vnerd.com/artifactory/api/npm/npm-pluralsight/@types/pg/-/pg-7.14.7.tgz"
+        },
+        "@types/sinon-chai": {
+            "version": "3.2.3",
+            "resolved": "http://repository.vnerd.com/artifactory/api/npm/npm-pluralsight/@types/sinon-chai/-/sinon-chai-3.2.3.tgz"
+        },
+        "@types/sparkpost": {
+            "version": "2.1.4",
+            "resolved": "https://repository.vnerd.com/artifactory/api/npm/npm-pluralsight/@types/sparkpost/-/sparkpost-2.1.4.tgz"
+        },
+        "@typescript-eslint/eslint-plugin": {
+            "version": "4.14.0",
+            "resolved": "http://repository.vnerd.com/artifactory/api/npm/npm-pluralsight/@typescript-eslint/eslint-plugin/-/eslint-plugin-4.14.0.tgz"
+        },
+        "@typescript-eslint/parser": {
+            "version": "4.14.0",
+            "resolved": "http://repository.vnerd.com/artifactory/api/npm/npm-pluralsight/@typescript-eslint/parser/-/parser-4.14.0.tgz"
+        },
+        "amqplib": {
+            "version": "0.5.5",
+            "resolved": "https://repository.vnerd.com/artifactory/api/npm/npm-pluralsight/amqplib/-/amqplib-0.5.5.tgz"
+        },
+        "aws-sdk": {
+            "version": "2.771.0",
+            "resolved": "https://repository.vnerd.com/artifactory/api/npm/npm-pluralsight/aws-sdk/-/aws-sdk-2.771.0.tgz"
+        },
+        "axios": {
+            "version": "0.21.1",
+            "resolved": "http://repository.vnerd.com/artifactory/api/npm/npm-pluralsight/axios/-/axios-0.21.1.tgz"
+        },
+        "bunyan": {
+            "version": "1.8.12",
+            "resolved": "https://repository.vnerd.com/artifactory/api/npm/npm-pluralsight/bunyan/-/bunyan-1.8.12.tgz"
+        },
+        "chai-as-promised": {
+            "version": "7.1.1",
+            "resolved": "http://repository.vnerd.com/artifactory/api/npm/npm-pluralsight/chai-as-promised/-/chai-as-promised-7.1.1.tgz"
+        },
+        "chai-exclude": {
+            "version": "2.0.2",
+            "resolved": "http://repository.vnerd.com/artifactory/api/npm/npm-pluralsight/chai-exclude/-/chai-exclude-2.0.2.tgz"
+        },
+        "chai": {
+            "version": "4.2.0",
+            "resolved": "http://repository.vnerd.com/artifactory/api/npm/npm-pluralsight/chai/-/chai-4.2.0.tgz"
+        },
+        "dotenv": {
+            "version": "8.2.0",
+            "resolved": "http://repository.vnerd.com/artifactory/api/npm/npm-pluralsight/dotenv/-/dotenv-8.2.0.tgz"
+        },
+        "eslint-config-prettier": {
+            "version": "7.2.0",
+            "resolved": "http://repository.vnerd.com/artifactory/api/npm/npm-pluralsight/eslint-config-prettier/-/eslint-config-prettier-7.2.0.tgz"
+        },
+        "eslint-plugin-chai-friendly": {
+            "version": "0.6.0",
+            "resolved": "http://repository.vnerd.com/artifactory/api/npm/npm-pluralsight/eslint-plugin-chai-friendly/-/eslint-plugin-chai-friendly-0.6.0.tgz"
+        },
+        "eslint-plugin-import": {
+            "version": "2.22.1",
+            "resolved": "http://repository.vnerd.com/artifactory/api/npm/npm-pluralsight/eslint-plugin-import/-/eslint-plugin-import-2.22.1.tgz"
+        },
+        "eslint-plugin-mocha": {
+            "version": "8.0.0",
+            "resolved": "http://repository.vnerd.com/artifactory/api/npm/npm-pluralsight/eslint-plugin-mocha/-/eslint-plugin-mocha-8.0.0.tgz"
+        },
+        "eslint-plugin-prettier": {
+            "version": "3.3.1",
+            "resolved": "http://repository.vnerd.com/artifactory/api/npm/npm-pluralsight/eslint-plugin-prettier/-/eslint-plugin-prettier-3.3.1.tgz"
+        },
+        "eslint-plugin-react": {
+            "version": "7.22.0",
+            "resolved": "http://repository.vnerd.com/artifactory/api/npm/npm-pluralsight/eslint-plugin-react/-/eslint-plugin-react-7.22.0.tgz"
+        },
+        "eslint": {
+            "version": "7.18.0",
+            "resolved": "http://repository.vnerd.com/artifactory/api/npm/npm-pluralsight/eslint/-/eslint-7.18.0.tgz"
+        },
+        "firebase-admin": {
+            "version": "9.2.0",
+            "resolved": "https://repository.vnerd.com/artifactory/api/npm/npm-pluralsight/firebase-admin/-/firebase-admin-9.2.0.tgz"
+        },
+        "husky": {
+            "version": "4.2.3",
+            "resolved": "http://repository.vnerd.com/artifactory/api/npm/npm-pluralsight/husky/-/husky-4.2.3.tgz"
+        },
+        "jsdom": {
+            "version": "16.2.0",
+            "resolved": "http://repository.vnerd.com/artifactory/api/npm/npm-pluralsight/jsdom/-/jsdom-16.2.0.tgz"
+        },
+        "jsonwebtoken": {
+            "version": "8.5.1",
+            "resolved": "https://repository.vnerd.com/artifactory/api/npm/npm-pluralsight/jsonwebtoken/-/jsonwebtoken-8.5.1.tgz"
+        },
+        "knex": {
+            "version": "0.21.16",
+            "resolved": "http://repository.vnerd.com/artifactory/api/npm/npm-pluralsight/knex/-/knex-0.21.16.tgz"
+        },
+        "koa-router": {
+            "version": "7.2.1",
+            "resolved": "https://repository.vnerd.com/artifactory/api/npm/npm-pluralsight/koa-router/-/koa-router-7.2.1.tgz"
+        },
+        "launchdarkly-node-server-sdk": {
+            "version": "5.11.2",
+            "resolved": "https://repository.vnerd.com/artifactory/api/npm/npm-pluralsight/launchdarkly-node-server-sdk/-/launchdarkly-node-server-sdk-5.11.2.tgz"
+        },
+        "lint-staged": {
+            "version": "10.0.8",
+            "resolved": "http://repository.vnerd.com/artifactory/api/npm/npm-pluralsight/lint-staged/-/lint-staged-10.0.8.tgz"
+        },
+        "lodash.chunk": {
+            "version": "4.2.0",
+            "resolved": "https://repository.vnerd.com/artifactory/api/npm/npm-pluralsight/lodash.chunk/-/lodash.chunk-4.2.0.tgz"
+        },
+        "mandrill-api": {
+            "version": "1.0.45",
+            "resolved": "https://repository.vnerd.com/artifactory/api/npm/npm-pluralsight/mandrill-api/-/mandrill-api-1.0.45.tgz"
+        },
+        "mocha-teamcity-reporter": {
+            "version": "3.0.0",
+            "resolved": "http://repository.vnerd.com/artifactory/api/npm/npm-pluralsight/mocha-teamcity-reporter/-/mocha-teamcity-reporter-3.0.0.tgz"
+        },
+        "mocha": {
+            "version": "7.1.1",
+            "resolved": "http://repository.vnerd.com/artifactory/api/npm/npm-pluralsight/mocha/-/mocha-7.1.1.tgz"
+        },
+        "newrelic": {
+            "version": "7.5.0",
+            "resolved": "https://repository.vnerd.com/artifactory/api/npm/npm-pluralsight/newrelic/-/newrelic-7.5.0.tgz"
+        },
+        "pg": {
+            "version": "8.5.1",
+            "resolved": "https://repository.vnerd.com/artifactory/api/npm/npm-pluralsight/pg/-/pg-8.5.1.tgz"
+        },
+        "prettier": {
+            "version": "1.19.1",
+            "resolved": "http://repository.vnerd.com/artifactory/api/npm/npm-pluralsight/prettier/-/prettier-1.19.1.tgz"
+        },
+        "rabbot": {
+            "version": "2.1.0",
+            "resolved": "https://repository.vnerd.com/artifactory/api/npm/npm-pluralsight/rabbot/-/rabbot-2.1.0.tgz"
+        },
+        "sinon-chai": {
+            "version": "3.5.0",
+            "resolved": "http://repository.vnerd.com/artifactory/api/npm/npm-pluralsight/sinon-chai/-/sinon-chai-3.5.0.tgz"
+        },
+        "sinon": {
+            "version": "7.5.0",
+            "resolved": "http://repository.vnerd.com/artifactory/api/npm/npm-pluralsight/sinon/-/sinon-7.5.0.tgz"
+        },
+        "sparkpost": {
+            "version": "2.1.4",
+            "resolved": "https://repository.vnerd.com/artifactory/api/npm/npm-pluralsight/sparkpost/-/sparkpost-2.1.4.tgz"
+        },
+        "sql-template-strings": {
+            "version": "2.2.2",
+            "resolved": "https://repository.vnerd.com/artifactory/api/npm/npm-pluralsight/sql-template-strings/-/sql-template-strings-2.2.2.tgz"
+        },
+        "supertest": {
+            "version": "3.0.0",
+            "resolved": "http://repository.vnerd.com/artifactory/api/npm/npm-pluralsight/supertest/-/supertest-3.0.0.tgz"
+        },
+        "timekeeper": {
+            "version": "2.2.0",
+            "resolved": "http://repository.vnerd.com/artifactory/api/npm/npm-pluralsight/timekeeper/-/timekeeper-2.2.0.tgz"
+        },
+        "ts-node": {
+            "version": "7.0.1",
+            "resolved": "http://repository.vnerd.com/artifactory/api/npm/npm-pluralsight/ts-node/-/ts-node-7.0.1.tgz"
+        },
+        "typescript": {
+            "version": "4.1.3",
+            "resolved": "http://repository.vnerd.com/artifactory/api/npm/npm-pluralsight/typescript/-/typescript-4.1.3.tgz"
+        },
+        "uuid": {
+            "version": "7.0.2",
+            "resolved": "https://repository.vnerd.com/artifactory/api/npm/npm-pluralsight/uuid/-/uuid-7.0.2.tgz"
+        }
+    }
+};
