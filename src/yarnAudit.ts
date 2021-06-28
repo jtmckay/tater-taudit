@@ -157,7 +157,7 @@ export type PackageDependency = {
   version?: string
   patchedVersions?: string
   earliestExistingVersion?: string
-  earliestViableVersion?: string
+  leastViableVersion?: string
   recommendedViableVersion?: string
   latestViableVersion?: string
   dependents: Array<PackageDependency>
@@ -255,15 +255,6 @@ export async function buildTopLevelPackageList(): Promise<{npmList: NpmList, wor
   }
 }
 
-// export function getYarnInfoPackages (yarnInfo: YarnInfo): Array<string> {
-//   const packages = new Set<string>()
-//   yarnInfo.data.trees?.forEach(tree => {
-//     const packageNameSplit = tree.name.split('@')
-//     packages.add(packageNameSplit.slice(0, packageNameSplit.length - 1).join('@'))
-//   })
-//   return Array.from(packages)
-// }
-
 function addDependent (tree: Array<PackageDependency>, npmPackage: PackageDependency, dependents: Array<string>): void {
   let toUpdate = tree.find(i => i.name === npmPackage.name && i.version === npmPackage.version)
   if (!toUpdate) {
@@ -292,44 +283,6 @@ export function buildTree (yarnAudits: Array<YarnAudit>): Array<PackageDependenc
   })
   return tree
 }
-
-// export function getFlatListOfVulnerabilities (yarnAudits: Array<YarnAudit>): Array<string> {
-//   const vulnerabilities = new Set<string>()
-//   yarnAudits.forEach(yarnAudit => {
-//     if (yarnAudit.type === 'auditAdvisory') {
-//       yarnAudit.data.advisory.findings.forEach((finding) => {
-//         vulnerabilities.add(`${yarnAudit.data.advisory.module_name}@${finding.version}`)
-//       })
-//     }
-//   })
-//   return Array.from(vulnerabilities)
-// }
-
-// function addDependent (tree: Array<PackageDependency>, npmPackage: PackageDependency, dependents: Array<PackageDependency>): void {
-//   let toUpdate = tree.find(i => i.name === npmPackage.name && i.version === npmPackage.version)
-//   if (!toUpdate) {
-//     toUpdate = { ...npmPackage }
-//     tree.push(toUpdate)
-//   }
-//   if (dependents.length) {
-//     const nextDependentsList = [...dependents]
-//     const nextPackage = nextDependentsList.pop()
-//     if (!nextPackage) throw new Error('Missing next package')
-//     addDependent(toUpdate.dependents, nextPackage, nextDependentsList)
-//   }
-// }
-
-// export function buildTree (yarnChildren: Array<YarnInfoChildren>, vulnerabilities: Array<string>, dependents: Array<PackageDependency>) {
-//   const tree: Array<PackageDependency> = []
-//   yarnChildren.forEach(child => {
-//     const npmPackage = {}
-//     // Needs to cover imperfect matches
-//     if (vulnerabilities.includes(child.name)) {
-//       addDependent()
-//     }
-//   })
-//   return tree
-// }
 
 export async function getNpmPackageInfo (npmPackageName: string, npmPackageVersion?: string): Promise<PackageInfo | undefined> {
   const npmPackageJSON = await execute(`npm view ${npmPackageName}${npmPackageVersion ? `@${npmPackageVersion}` : ''} --json`, true).catch(() => {}) as NpmVersionInfo
@@ -421,8 +374,8 @@ function getMinimumYarnLockVersion (yarnInfo: YarnInfo, npmPackage: PackageDepen
 export async function fillViableVersions (npmPackage: PackageDependency, dependency: PackageDependency, yarnInfo: YarnInfo) {
   let latestViableVersion
   let recommendedViableVersion
-  let earliestViableVersion
-  const requiredMinimumViableVersion = dependency.patchedVersions || dependency.earliestViableVersion
+  let leastViableVersion
+  const requiredMinimumViableVersion = dependency.patchedVersions || dependency.leastViableVersion
 
   const latestNpmPackageDependencies = await getNpmPackageInfo(npmPackage.name)
   if (!latestNpmPackageDependencies) return
@@ -433,7 +386,7 @@ export async function fillViableVersions (npmPackage: PackageDependency, depende
   if (isValidVersion(latestNpmPackageDependencyVersion, requiredMinimumViableVersion)) {
     latestViableVersion = latestNpmPackageDependencies.version
     recommendedViableVersion = latestViableVersion
-    earliestViableVersion = latestViableVersion
+    leastViableVersion = latestViableVersion
 
     const versions = await getVersions(npmPackage)
     const minimumVersion = getMinimumYarnLockVersion(yarnInfo, npmPackage)
@@ -441,15 +394,15 @@ export async function fillViableVersions (npmPackage: PackageDependency, depende
       npmPackage.earliestExistingVersion = minimumVersion.join('.')
     }
     const versionsGreaterOrEqualToCurrent = versions.filter(i => isItGreaterOrEqual(cleanPackageVersion(i), minimumVersion))
-    earliestViableVersion = await divideAndConquer(versionsGreaterOrEqualToCurrent, async version => {
+    leastViableVersion = await divideAndConquer(versionsGreaterOrEqualToCurrent, async version => {
       const packageInfo = await getNpmPackageInfo(npmPackage.name, version)
       if (!packageInfo) return false
       return isValidVersion(packageInfo.dependencies[dependency.name], requiredMinimumViableVersion)
     })
 
-    if (minimumVersion && earliestViableVersion) {
+    if (minimumVersion && leastViableVersion) {
       const [majorVersion] = minimumVersion
-      if (majorVersion && majorVersion >= cleanPackageVersion(earliestViableVersion as string)[0]) {
+      if (majorVersion && majorVersion >= cleanPackageVersion(leastViableVersion as string)[0]) {
         const sameMajorVersions = versionsGreaterOrEqualToCurrent.filter(i => {
           return (cleanPackageVersion(i)[0].toString() as string).startsWith((majorVersion as number).toString())
         }).reverse()
@@ -467,7 +420,7 @@ export async function fillViableVersions (npmPackage: PackageDependency, depende
 
   npmPackage.latestViableVersion = latestViableVersion
   npmPackage.recommendedViableVersion = recommendedViableVersion
-  npmPackage.earliestViableVersion = earliestViableVersion
+  npmPackage.leastViableVersion = leastViableVersion
   return npmPackage
 }
 
@@ -509,8 +462,6 @@ export function sortFlatDependentTree (tree: Array<PackageDependency>): Array<Pa
   })
 }
 
-// traverseForPackageUpdate(expandedTree, 'redis', '>=3.1.1', '@pluralsight/ps-redis-node')
-
 export async function execute(command: string, json = false, jsonLine = false) {
   const useCache = command.startsWith('npm view')
   if (useCache && localCache[command]) {
@@ -547,20 +498,4 @@ export async function execute(command: string, json = false, jsonLine = false) {
   }
 
   return newCommand
-  // return retry(() => {
-  // }, 5, 50)
 };
-
-// async function retry (theThing: Function, retryLimit: number, delay: number): Promise<any> {
-//   let response
-//   try {
-//     response = await theThing()
-//   } catch (err) {
-//     if (retryLimit > 0) {
-//       response = await retry(theThing, retryLimit - 1, delay * 2)
-//     } else {
-//       throw new Error(`No more retries ${JSON.stringify(err)}`)
-//     }
-//   }
-//   return response
-// }

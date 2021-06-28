@@ -8,7 +8,7 @@ import {
   fillTreeViability,
   sortFlatDependentTree
 } from '../yarnAudit'
-import { testFlatTree, testNpmList, testYarnAudit } from './testData'
+import { testFlatTree, testYarnAudit } from './testData'
 
 describe('isValidVersion', () => {
   describe('when given a major version higher than acceptable', () => {
@@ -251,7 +251,7 @@ describe.skip('fillViableVersions', () => {
     }, yarnInfo)
     expect(test).toEqual({
       "name": "css-select",
-      "earliestViableVersion": "4.0.0",
+      "leastViableVersion": "4.0.0",
       "recommendedViableVersion": "4.1.3",
       "latestViableVersion": "4.1.3",
       "dependents": []
@@ -337,17 +337,17 @@ describe.skip('fillTreeViability', () => {
                     "dependents": [],
                     "latestViableVersion": "23.1.14",
                     "recommendedViableVersion": "23.1.14",
-                    "earliestViableVersion": "2.0.2"
+                    "leastViableVersion": "2.0.2"
                   }
                 ],
                 "latestViableVersion": "2.3.1",
                 "recommendedViableVersion": "2.3.1",
-                "earliestViableVersion": "0.0.1-2"
+                "leastViableVersion": "0.0.1-2"
               }
             ],
             "latestViableVersion": "4.1.3",
             "recommendedViableVersion": "4.1.3",
-            "earliestViableVersion": "4.0.0"
+            "leastViableVersion": "4.0.0"
           }
         ]
       }
@@ -374,17 +374,17 @@ describe('flattenDependentTree', () => {
                     "dependents": [],
                     "latestViableVersion": "23.1.14",
                     "recommendedViableVersion": "23.1.14",
-                    "earliestViableVersion": "2.0.2"
+                    "leastViableVersion": "2.0.2"
                   }
                 ],
                 "latestViableVersion": "2.3.1",
                 "recommendedViableVersion": "2.3.1",
-                "earliestViableVersion": "0.0.1-2"
+                "leastViableVersion": "0.0.1-2"
               }
             ],
             "latestViableVersion": "4.1.3",
             "recommendedViableVersion": "4.1.3",
-            "earliestViableVersion": "4.0.0"
+            "leastViableVersion": "4.0.0"
           }
         ]
       }
@@ -398,19 +398,19 @@ describe('flattenDependentTree', () => {
                         {
                            "dependents": [],
                            "latestViableVersion": "23.1.14",
-                           "earliestViableVersion": "2.0.2",
+                           "leastViableVersion": "2.0.2",
                            "name": "@pluralsight/ps-design-system-icon",
                            "recommendedViableVersion": "23.1.14"
                         }
                      ],
                      "latestViableVersion": "2.3.1",
-                     "earliestViableVersion": "0.0.1-2",
+                     "leastViableVersion": "0.0.1-2",
                      "name": "svgo",
                      "recommendedViableVersion": "2.3.1"
                   }
                ],
                "latestViableVersion": "4.1.3",
-               "earliestViableVersion": "4.0.0",
+               "leastViableVersion": "4.0.0",
                "name": "css-select",
                "recommendedViableVersion": "4.1.3"
             }
@@ -426,19 +426,19 @@ describe('flattenDependentTree', () => {
                   {
                      "dependents": [],
                      "latestViableVersion": "23.1.14",
-                     "earliestViableVersion": "2.0.2",
+                     "leastViableVersion": "2.0.2",
                      "name": "@pluralsight/ps-design-system-icon",
                      "recommendedViableVersion": "23.1.14"
                   }
                ],
                "latestViableVersion": "2.3.1",
-               "earliestViableVersion": "0.0.1-2",
+               "leastViableVersion": "0.0.1-2",
                "name": "svgo",
                "recommendedViableVersion": "2.3.1"
             }
          ],
          "latestViableVersion": "4.1.3",
-         "earliestViableVersion": "4.0.0",
+         "leastViableVersion": "4.0.0",
          "name": "css-select",
          "recommendedViableVersion": "4.1.3"
       },
@@ -447,20 +447,20 @@ describe('flattenDependentTree', () => {
             {
                "dependents": [],
                "latestViableVersion": "23.1.14",
-               "earliestViableVersion": "2.0.2",
+               "leastViableVersion": "2.0.2",
                "name": "@pluralsight/ps-design-system-icon",
                "recommendedViableVersion": "23.1.14"
             }
          ],
          "latestViableVersion": "2.3.1",
-         "earliestViableVersion": "0.0.1-2",
+         "leastViableVersion": "0.0.1-2",
          "name": "svgo",
          "recommendedViableVersion": "2.3.1"
       },
       {
          "dependents": [],
          "latestViableVersion": "23.1.14",
-         "earliestViableVersion": "2.0.2",
+         "leastViableVersion": "2.0.2",
          "name": "@pluralsight/ps-design-system-icon",
          "recommendedViableVersion": "23.1.14"
       }
