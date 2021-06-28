@@ -5,13 +5,11 @@ import {
   CommandOptions,
   buildTopLevelPackageList,
   buildTree,
-  cleanPackageVersion,
   execute,
   fillTreeViability,
   flattenDependentTree,
   getYarnAudits,
   getYarnInfo,
-  isValidVersion,
   sortFlatDependentTree,
   upgradePackages,
   upgradeMajorPackages
@@ -22,8 +20,8 @@ const program = new Command();
 program.description('An application for fixing security vulnerabilities')
 .option('-h, --help', 'Print out command options').addHelpText('after', `
   Examples:
-    $ tater-audit fix upgrade
-      -- Upgrades all dependents down to the lowest dependency found in the audit with a dependency that has a fix available
+    $ tater-audit fix
+      -- Upgrades all dependents down to the lowest dependency found in the audit with a dependency that has a fix available.
 
     $ tater-audit log
       -- Creates a tree of all dependents, from the lowest dependency to the highest dependent, found in the audit.
@@ -42,9 +40,16 @@ program
     main(options)
   }).addHelpText('after', `
   Examples:
+    $ tater-audit fix
+      -- Runs all available fixes but only logs the commands that would be run
+    $ tater-audit fix -a
+      -- Runs all available fixes
+    $ tater-audit fix -d
+      -- Only logs the commands that would be run
     $ tater-audit fix -u
       -- Upgrades all dependents down to the lowest dependency found in the audit with a dependency that has a fix available
-    $ tater-audit fix
+    $ tater-audit fix -m
+      -- Upgrades all top level dependencies with a fix available that is not permitted by the current locked version
 `);
 
 program
@@ -61,6 +66,11 @@ Examples:
 program.parse(process.argv);
 
 export async function main(options: CommandOptions) {
+  if (!options.upgrade && !options.major_upgrade && !options.all) {
+    options.all = true
+    options.dry = true
+    console.log('Try running `tater-audit help fix` for more options. Defaulting to "all" and "dry"')
+  }
   let viableTree
   const initialYarnAudits = await getYarnAudits()
   const {npmList, workspaceList} = await buildTopLevelPackageList()
