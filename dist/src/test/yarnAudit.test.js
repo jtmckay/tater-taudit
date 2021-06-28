@@ -719,6 +719,7 @@ describe('upgradeMajorPackages', function () {
             {
                 "dependents": [],
                 "name": "@pluralsight/ps-design-system-icon",
+                "recommendedViableVersion": "2.0.7",
                 "minimumViableVersion": "2.0.5",
             },
             {
@@ -753,7 +754,7 @@ describe('upgradeMajorPackages', function () {
         ], [
             { name: '@pluralsight/ps-design-system-icon', version: '^1.2.99' }
         ]);
-        expect(commandList).toEqual(["yarn add @pluralsight/ps-design-system-icon@^2.0.5 --ignore-workspace-root-check"]);
+        expect(commandList).toEqual(["yarn add @pluralsight/ps-design-system-icon@^2.0.7 -W"]);
     });
     it('logs the expected commands during a dry run', function () {
         var commandList = [];
@@ -795,6 +796,6 @@ describe('upgradeMajorPackages', function () {
         ], [
             { name: '@pluralsight/ps-design-system-icon', version: '^0.2.99' }
         ]);
-        expect(commandList).toEqual(["yarn add @pluralsight/ps-design-system-icon@^2.0.5 --ignore-workspace-root-check"]);
+        expect(commandList).toEqual(["yarn add @pluralsight/ps-design-system-icon@^2.0.5 -W"]);
     });
 });

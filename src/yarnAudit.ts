@@ -491,8 +491,8 @@ export async function upgradeMajorPackages (commandFunction: Function, sortedFla
     const topLevelPackages = workspaceList.filter(i => i.name === packageName)
     if (topLevelPackages.length) {
       await Promise.all(topLevelPackages.map(async topLevelPackage => {
-        let minimumViableVersion = sortedFlatTree.find(i => i.name === packageName)?.minimumViableVersion as string
-        const command = `yarn ${topLevelPackage.workspace ? `workspace ${topLevelPackage.workspace} ` : ''}add ${packageName}@^${minimumViableVersion.replace(/\^/g, '')}${!topLevelPackage.workspace ? ' --ignore-workspace-root-check' : ''}`
+        let npmPackage = sortedFlatTree.find(i => i.name === packageName)
+        const command = `yarn ${topLevelPackage.workspace ? `workspace ${topLevelPackage.workspace} ` : ''}add ${packageName}@^${(npmPackage?.recommendedViableVersion || npmPackage?.minimumViableVersion as string).replace(/\^/g, '')}${!topLevelPackage.workspace ? ' -W' : ''}`
         await commandFunction(command)
       }))
     }

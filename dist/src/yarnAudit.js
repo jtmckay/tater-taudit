@@ -500,16 +500,15 @@ function upgradeMajorPackages(commandFunction, sortedFlatTree, workspaceList) {
                     topLevelPackages = workspaceList.filter(function (i) { return i.name === packageName; });
                     if (!topLevelPackages.length) return [3 /*break*/, 3];
                     return [4 /*yield*/, Promise.all(topLevelPackages.map(function (topLevelPackage) { return __awaiter(_this, void 0, void 0, function () {
-                            var minimumViableVersion, command;
-                            var _a;
-                            return __generator(this, function (_b) {
-                                switch (_b.label) {
+                            var npmPackage, command;
+                            return __generator(this, function (_a) {
+                                switch (_a.label) {
                                     case 0:
-                                        minimumViableVersion = (_a = sortedFlatTree.find(function (i) { return i.name === packageName; })) === null || _a === void 0 ? void 0 : _a.minimumViableVersion;
-                                        command = "yarn " + (topLevelPackage.workspace ? "workspace " + topLevelPackage.workspace + " " : '') + "add " + packageName + "@^" + minimumViableVersion.replace(/\^/g, '') + (!topLevelPackage.workspace ? ' --ignore-workspace-root-check' : '');
+                                        npmPackage = sortedFlatTree.find(function (i) { return i.name === packageName; });
+                                        command = "yarn " + (topLevelPackage.workspace ? "workspace " + topLevelPackage.workspace + " " : '') + "add " + packageName + "@^" + ((npmPackage === null || npmPackage === void 0 ? void 0 : npmPackage.recommendedViableVersion) || (npmPackage === null || npmPackage === void 0 ? void 0 : npmPackage.minimumViableVersion)).replace(/\^/g, '') + (!topLevelPackage.workspace ? ' -W' : '');
                                         return [4 /*yield*/, commandFunction(command)];
                                     case 1:
-                                        _b.sent();
+                                        _a.sent();
                                         return [2 /*return*/];
                                 }
                             });
