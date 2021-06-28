@@ -108,12 +108,12 @@ exports.testFlatTree = [
                         "dependents": [],
                         "latestViableVersion": "1.0.1",
                         "recommendedViableVersion": "1.0.1",
-                        "earliestViableVersion": "1.0.0"
+                        "minimumViableVersion": "1.0.0"
                     }
                 ],
                 "latestViableVersion": "6.1.0",
                 "recommendedViableVersion": "5.14.5",
-                "earliestViableVersion": "5.13.1"
+                "minimumViableVersion": "5.13.1"
             }
         ],
         "version": "2.6.5"
@@ -169,12 +169,12 @@ exports.testFlatTree = [
                 "dependents": [],
                 "latestViableVersion": "1.0.1",
                 "recommendedViableVersion": "1.0.1",
-                "earliestViableVersion": "1.0.0"
+                "minimumViableVersion": "1.0.0"
             }
         ],
         "latestViableVersion": "6.1.0",
         "recommendedViableVersion": "5.14.5",
-        "earliestViableVersion": "5.13.1"
+        "minimumViableVersion": "5.13.1"
     },
     {
         "name": "redis",
@@ -215,12 +215,12 @@ exports.testFlatTree = [
                         "dependents": [],
                         "latestViableVersion": "1.0.1",
                         "recommendedViableVersion": "1.0.1",
-                        "earliestViableVersion": "1.0.0"
+                        "minimumViableVersion": "1.0.0"
                     }
                 ],
                 "latestViableVersion": "6.1.0",
                 "recommendedViableVersion": "5.14.5",
-                "earliestViableVersion": "5.13.1"
+                "minimumViableVersion": "5.13.1"
             }
         ],
         "version": "2.8.0"
@@ -247,7 +247,7 @@ exports.testFlatTree = [
                                         "dependents": [],
                                         "latestViableVersion": "1.0.1",
                                         "recommendedViableVersion": "1.0.1",
-                                        "earliestViableVersion": "1.0.0"
+                                        "minimumViableVersion": "1.0.0"
                                     },
                                     {
                                         "name": "web",
@@ -258,17 +258,17 @@ exports.testFlatTree = [
                                 ],
                                 "latestViableVersion": "9.10.0",
                                 "recommendedViableVersion": "9.9.0",
-                                "earliestViableVersion": "9.2.0"
+                                "minimumViableVersion": "9.2.0"
                             }
                         ],
                         "latestViableVersion": "0.10.5",
                         "recommendedViableVersion": "0.10.5",
-                        "earliestViableVersion": "0.7.0-2020922203858"
+                        "minimumViableVersion": "0.7.0-2020922203858"
                     }
                 ],
                 "latestViableVersion": "0.5.3",
                 "recommendedViableVersion": "0.5.3",
-                "earliestViableVersion": "0.1.21-1.0.0-eap-firestore-debug.9c6096f43"
+                "minimumViableVersion": "0.1.21-1.0.0-eap-firestore-debug.9c6096f43"
             },
             {
                 "name": "@firebase/database",
@@ -285,7 +285,7 @@ exports.testFlatTree = [
                                 "dependents": [],
                                 "latestViableVersion": "1.0.1",
                                 "recommendedViableVersion": "1.0.1",
-                                "earliestViableVersion": "1.0.0"
+                                "minimumViableVersion": "1.0.0"
                             },
                             {
                                 "name": "web",
@@ -296,12 +296,12 @@ exports.testFlatTree = [
                         ],
                         "latestViableVersion": "9.10.0",
                         "recommendedViableVersion": "9.9.0",
-                        "earliestViableVersion": "9.2.0"
+                        "minimumViableVersion": "9.2.0"
                     }
                 ],
                 "latestViableVersion": "0.10.5",
                 "recommendedViableVersion": "0.10.5",
-                "earliestViableVersion": "0.7.1-2020103231751"
+                "minimumViableVersion": "0.7.1-2020103231751"
             }
         ],
         "version": "0.3.2"
@@ -324,7 +324,7 @@ exports.testFlatTree = [
                                 "dependents": [],
                                 "latestViableVersion": "1.0.1",
                                 "recommendedViableVersion": "1.0.1",
-                                "earliestViableVersion": "1.0.0"
+                                "minimumViableVersion": "1.0.0"
                             },
                             {
                                 "name": "web",
@@ -335,17 +335,17 @@ exports.testFlatTree = [
                         ],
                         "latestViableVersion": "9.10.0",
                         "recommendedViableVersion": "9.9.0",
-                        "earliestViableVersion": "9.2.0"
+                        "minimumViableVersion": "9.2.0"
                     }
                 ],
                 "latestViableVersion": "0.10.5",
                 "recommendedViableVersion": "0.10.5",
-                "earliestViableVersion": "0.7.0-2020922203858"
+                "minimumViableVersion": "0.7.0-2020922203858"
             }
         ],
         "latestViableVersion": "0.5.3",
         "recommendedViableVersion": "0.5.3",
-        "earliestViableVersion": "0.1.21-1.0.0-eap-firestore-debug.9c6096f43"
+        "minimumViableVersion": "0.1.21-1.0.0-eap-firestore-debug.9c6096f43"
     },
     {
         "name": "@firebase/database",
@@ -362,7 +362,7 @@ exports.testFlatTree = [
                         "dependents": [],
                         "latestViableVersion": "1.0.1",
                         "recommendedViableVersion": "1.0.1",
-                        "earliestViableVersion": "1.0.0"
+                        "minimumViableVersion": "1.0.0"
                     },
                     {
                         "name": "web",
@@ -373,12 +373,12 @@ exports.testFlatTree = [
                 ],
                 "latestViableVersion": "9.10.0",
                 "recommendedViableVersion": "9.9.0",
-                "earliestViableVersion": "9.2.0"
+                "minimumViableVersion": "9.2.0"
             }
         ],
         "latestViableVersion": "0.10.5",
         "recommendedViableVersion": "0.10.5",
-        "earliestViableVersion": "0.7.0-2020922203858"
+        "minimumViableVersion": "0.7.0-2020922203858"
     },
     {
         "name": "firebase-admin",
@@ -392,7 +392,7 @@ exports.testFlatTree = [
                 "dependents": [],
                 "latestViableVersion": "1.0.1",
                 "recommendedViableVersion": "1.0.1",
-                "earliestViableVersion": "1.0.0"
+                "minimumViableVersion": "1.0.0"
             },
             {
                 "name": "web",
@@ -403,7 +403,7 @@ exports.testFlatTree = [
         ],
         "latestViableVersion": "9.10.0",
         "recommendedViableVersion": "9.9.0",
-        "earliestViableVersion": "9.2.0"
+        "minimumViableVersion": "9.2.0"
     },
     {
         "name": "css-what",
@@ -606,12 +606,12 @@ exports.testFlatTree = [
                         ],
                         "latestViableVersion": "2.3.1",
                         "recommendedViableVersion": "2.3.1",
-                        "earliestViableVersion": "2.3.1"
+                        "minimumViableVersion": "2.3.1"
                     }
                 ],
                 "latestViableVersion": "4.1.3",
                 "recommendedViableVersion": "4.1.3",
-                "earliestViableVersion": "4.0.0"
+                "minimumViableVersion": "4.0.0"
             }
         ],
         "version": "3.4.2"
@@ -813,12 +813,12 @@ exports.testFlatTree = [
                 ],
                 "latestViableVersion": "2.3.1",
                 "recommendedViableVersion": "2.3.1",
-                "earliestViableVersion": "2.3.1"
+                "minimumViableVersion": "2.3.1"
             }
         ],
         "latestViableVersion": "4.1.3",
         "recommendedViableVersion": "4.1.3",
-        "earliestViableVersion": "4.0.0"
+        "minimumViableVersion": "4.0.0"
     },
     {
         "name": "svgo",
@@ -1014,7 +1014,7 @@ exports.testFlatTree = [
         ],
         "latestViableVersion": "2.3.1",
         "recommendedViableVersion": "2.3.1",
-        "earliestViableVersion": "2.3.1"
+        "minimumViableVersion": "2.3.1"
     },
     {
         "name": "@pluralsight/ps-design-system-icon",

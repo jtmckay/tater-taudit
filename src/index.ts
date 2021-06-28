@@ -1,16 +1,23 @@
 #!/usr/bin/env node
 
 import { Command } from 'commander'
-import { buildTopLevelPackageList, buildTree, execute, fillTreeViability, flattenDependentTree, getYarnAudits, getYarnInfo, sortFlatDependentTree } from "./yarnAudit"
+import {
+  CommandOptions,
+  buildTopLevelPackageList,
+  buildTree,
+  cleanPackageVersion,
+  execute,
+  fillTreeViability,
+  flattenDependentTree,
+  getYarnAudits,
+  getYarnInfo,
+  isValidVersion,
+  sortFlatDependentTree,
+  upgradePackages,
+  upgradeMajorPackages
+} from "./yarnAudit"
 
 const program = new Command();
-
-type FixCommandOptions = {
-  all?: boolean
-  dry?: boolean
-  major_upgrade: boolean
-  upgrade?: boolean
-}
 
 program.description('An application for fixing security vulnerabilities')
 .option('-h, --help', 'Print out command options').addHelpText('after', `
@@ -31,7 +38,7 @@ program
   .option('-m, --major_upgrade', 'Attempt to install newer versions (perhaps major; breaking changes)')
   // .option('-t, --test_command <command>', 'Command to run between changes to apply as many fixes as possible without breaking changes')
   .option('-u, --upgrade', 'Upgrade audit dependencies with a fix available')
-  .action((options: FixCommandOptions) => {
+  .action((options: CommandOptions) => {
     main(options)
   }).addHelpText('after', `
   Examples:
@@ -53,59 +60,33 @@ Examples:
 
 program.parse(process.argv);
 
-export async function main(options: FixCommandOptions) {
+export async function main(options: CommandOptions) {
   let viableTree
   const initialYarnAudits = await getYarnAudits()
-  const { workspaceList} = await buildTopLevelPackageList()
+  const {npmList, workspaceList} = await buildTopLevelPackageList()
 
   const tree = buildTree(initialYarnAudits)
   const yarnInfo = await getYarnInfo()
 
-  viableTree = await fillTreeViability(tree, yarnInfo)
+  viableTree = await fillTreeViability(tree, yarnInfo, npmList)
 
   if (options.all || options.upgrade) {
     const flatTree = flattenDependentTree(viableTree)
     const sortedFlatTree = sortFlatDependentTree(flatTree)
 
-    const upgradeList = new Set<string>()
-    sortedFlatTree.filter(i => i.latestViableVersion || i.version).forEach(i => upgradeList.add(i.name))
-    const upgradeArray = Array.from(upgradeList).reverse()
-    for (var packageName = upgradeArray.pop(); upgradeArray.length > 0; packageName = upgradeArray.pop()) {
-      const command = `yarn upgrade ${packageName}`
-      if (options.dry) {
-        console.log(command)
-      } else {
-        await execute(command)
-      }
-    }
+    await upgradePackages(options.dry ? console.log : execute, sortedFlatTree)
   }
 
   if (options.all || options.major_upgrade) {
     if (options.all || options.upgrade) {
       const tree = buildTree(initialYarnAudits)
       const yarnInfo = await getYarnInfo()
-      viableTree = await fillTreeViability(tree, yarnInfo)
+      viableTree = await fillTreeViability(tree, yarnInfo, npmList)
     }
     const flatTree = flattenDependentTree(viableTree)
     const sortedFlatTree = sortFlatDependentTree(flatTree)
 
-    const upgradeList = new Set<string>()
-    sortedFlatTree.filter(i => i.latestViableVersion || i.version).forEach(i => upgradeList.add(i.name))
-    const upgradeArray = Array.from(upgradeList).reverse()
-    
-    for (var packageName = upgradeArray.pop(); upgradeArray.length > 0; packageName = upgradeArray.pop()) {
-      const topLevelPackages = workspaceList.filter(i => i.name === packageName)
-      if (topLevelPackages.length) {
-        await Promise.all(topLevelPackages.map(topLevelPackage => {
-          const command = `yarn ${topLevelPackage.workspace ? `workspace ${topLevelPackage.workspace} ` : ''}add ${packageName}${!topLevelPackage.workspace ? ' --ignore-workspace-root-check' : ''}`
-          if (options.dry) {
-            console.log(command)
-          } else {
-            execute(command)
-          }
-        }))
-      }
-    }
+    await upgradeMajorPackages(options.dry ? console.log : execute, sortedFlatTree, workspaceList)
   }
   
   if (!options.dry) {
@@ -128,7 +109,7 @@ export async function main(options: FixCommandOptions) {
     const postTree = buildTree(initialYarnAudits)
     const postYarnInfo = await getYarnInfo()
   
-    const postViableTree = await fillTreeViability(postTree, postYarnInfo)
+    const postViableTree = await fillTreeViability(postTree, postYarnInfo, npmList)
     console.log('\nNew Viable Tree:')
     console.log(JSON.stringify(postViableTree, null, 2))
     console.log('Good Luck!')
@@ -137,11 +118,12 @@ export async function main(options: FixCommandOptions) {
 
 export async function log() {
   const initialYarnAudits = await getYarnAudits()
+  const {npmList} = await buildTopLevelPackageList()
 
   const tree = buildTree(initialYarnAudits)
   const yarnInfo = await getYarnInfo()
 
-  const viableTree = await fillTreeViability(tree, yarnInfo)
+  const viableTree = await fillTreeViability(tree, yarnInfo, npmList)
 
   console.log(JSON.stringify(viableTree, null, 2))
 }

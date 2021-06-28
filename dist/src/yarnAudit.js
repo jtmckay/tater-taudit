@@ -52,7 +52,7 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from) {
     return to;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.execute = exports.sortFlatDependentTree = exports.flattenDependentTree = exports.fillTreeViability = exports.fillViableVersions = exports.isItGreaterOrEqual = exports.divideAndConquer = exports.getVersionSearchTextForLatestSameMajorVersion = exports.getVersions = exports.getNpmPackageInfo = exports.buildTree = exports.buildTopLevelPackageList = exports.getNpmList = exports.getYarnInfo = exports.getYarnAudits = exports.isValidVersion = void 0;
+exports.execute = exports.upgradeMajorPackages = exports.upgradePackages = exports.sortFlatDependentTree = exports.flattenDependentTree = exports.fillTreeViability = exports.fillViableVersions = exports.isItGreaterOrEqual = exports.divideAndConquer = exports.getVersionSearchTextForLatestSameMajorVersion = exports.getVersions = exports.getNpmPackageInfo = exports.buildTree = exports.buildTopLevelPackageList = exports.getNpmList = exports.getYarnInfo = exports.getYarnAudits = exports.isValidVersion = exports.cleanPackageVersion = void 0;
 var exec = require('child_process').exec;
 var localCache = {};
 function cleanPackageVersion(version) {
@@ -67,6 +67,7 @@ function cleanPackageVersion(version) {
     }), a = _a[0], b = _a[1], c = _a[2];
     return [a, b, c];
 }
+exports.cleanPackageVersion = cleanPackageVersion;
 function isValidVersion(vulnerablePackageVersion, acceptablePackageVersion) {
     if (!vulnerablePackageVersion)
         return true;
@@ -136,18 +137,19 @@ function buildTopLevelPackageList() {
                     baseNpmList = _a.sent();
                     npmList = __assign({}, baseNpmList);
                     return [4 /*yield*/, Promise.all(Object.keys(baseNpmList.dependencies).map(function (key) { return __awaiter(_this, void 0, void 0, function () {
-                            var workspace_1, workspaceNpmList;
+                            var version, workspace_1, workspaceNpmList;
                             var _a;
                             return __generator(this, function (_b) {
                                 switch (_b.label) {
                                     case 0:
+                                        version = baseNpmList.dependencies[key].version;
                                         if (!((_a = baseNpmList.dependencies[key].resolved) === null || _a === void 0 ? void 0 : _a.startsWith('file'))) return [3 /*break*/, 2];
                                         workspace_1 = baseNpmList.dependencies[key].resolved.replace(/^file:\.\.\//, '');
                                         return [4 /*yield*/, getNpmList("cd " + baseNpmList.dependencies[key].resolved.replace(/^file:\./, '') + " &&")];
                                     case 1:
                                         workspaceNpmList = _b.sent();
                                         Object.keys(workspaceNpmList.dependencies).forEach(function (workspaceKey) {
-                                            workspaceList.push({ name: workspaceKey, workspace: workspace_1 });
+                                            workspaceList.push({ name: workspaceKey, version: version, workspace: workspace_1 });
                                         });
                                         delete npmList.dependencies[key];
                                         Object.assign(npmList, workspaceNpmList);
@@ -157,7 +159,7 @@ function buildTopLevelPackageList() {
                                             return [2 /*return*/];
                                         }
                                         else {
-                                            workspaceList.push({ name: key });
+                                            workspaceList.push({ name: key, version: version });
                                         }
                                         _b.label = 3;
                                     case 3: return [2 /*return*/];
@@ -175,14 +177,6 @@ function buildTopLevelPackageList() {
     });
 }
 exports.buildTopLevelPackageList = buildTopLevelPackageList;
-// export function getYarnInfoPackages (yarnInfo: YarnInfo): Array<string> {
-//   const packages = new Set<string>()
-//   yarnInfo.data.trees?.forEach(tree => {
-//     const packageNameSplit = tree.name.split('@')
-//     packages.add(packageNameSplit.slice(0, packageNameSplit.length - 1).join('@'))
-//   })
-//   return Array.from(packages)
-// }
 function addDependent(tree, npmPackage, dependents) {
     var toUpdate = tree.find(function (i) { return i.name === npmPackage.name && i.version === npmPackage.version; });
     if (!toUpdate) {
@@ -211,41 +205,6 @@ function buildTree(yarnAudits) {
     return tree;
 }
 exports.buildTree = buildTree;
-// export function getFlatListOfVulnerabilities (yarnAudits: Array<YarnAudit>): Array<string> {
-//   const vulnerabilities = new Set<string>()
-//   yarnAudits.forEach(yarnAudit => {
-//     if (yarnAudit.type === 'auditAdvisory') {
-//       yarnAudit.data.advisory.findings.forEach((finding) => {
-//         vulnerabilities.add(`${yarnAudit.data.advisory.module_name}@${finding.version}`)
-//       })
-//     }
-//   })
-//   return Array.from(vulnerabilities)
-// }
-// function addDependent (tree: Array<PackageDependency>, npmPackage: PackageDependency, dependents: Array<PackageDependency>): void {
-//   let toUpdate = tree.find(i => i.name === npmPackage.name && i.version === npmPackage.version)
-//   if (!toUpdate) {
-//     toUpdate = { ...npmPackage }
-//     tree.push(toUpdate)
-//   }
-//   if (dependents.length) {
-//     const nextDependentsList = [...dependents]
-//     const nextPackage = nextDependentsList.pop()
-//     if (!nextPackage) throw new Error('Missing next package')
-//     addDependent(toUpdate.dependents, nextPackage, nextDependentsList)
-//   }
-// }
-// export function buildTree (yarnChildren: Array<YarnInfoChildren>, vulnerabilities: Array<string>, dependents: Array<PackageDependency>) {
-//   const tree: Array<PackageDependency> = []
-//   yarnChildren.forEach(child => {
-//     const npmPackage = {}
-//     // Needs to cover imperfect matches
-//     if (vulnerabilities.includes(child.name)) {
-//       addDependent()
-//     }
-//   })
-//   return tree
-// }
 function getNpmPackageInfo(npmPackageName, npmPackageVersion) {
     return __awaiter(this, void 0, void 0, function () {
         var npmPackageJSON, dependencies, devDependencies;
@@ -368,14 +327,16 @@ function getMinimumYarnLockVersion(yarnInfo, npmPackage) {
         }
     }, undefined);
 }
-function fillViableVersions(npmPackage, dependency, yarnInfo) {
+function fillViableVersions(npmPackage, dependency, yarnInfo, npmList) {
     return __awaiter(this, void 0, void 0, function () {
-        var latestViableVersion, recommendedViableVersion, earliestViableVersion, requiredMinimumViableVersion, latestNpmPackageDependencies, latestNpmPackageDependencyVersion, versions, minimumVersion_1, versionsGreaterOrEqualToCurrent, majorVersion_1, sameMajorVersions, possibleSameMajorVersion;
+        var latestViableVersion, recommendedViableVersion, minimumViableVersion, requiredMinimumViableVersion, latestNpmPackageDependencies, latestNpmPackageDependencyVersion, versions, minimumVersion_1, versionsGreaterOrEqualToCurrent, majorVersion_1, sameMajorVersions, possibleSameMajorVersion;
         var _this = this;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    requiredMinimumViableVersion = dependency.patchedVersions || dependency.earliestViableVersion;
+                    if (npmPackage.dependents.length === 0 && !npmList.dependencies[npmPackage.name])
+                        return [2 /*return*/];
+                    requiredMinimumViableVersion = dependency.patchedVersions || dependency.minimumViableVersion;
                     return [4 /*yield*/, getNpmPackageInfo(npmPackage.name)];
                 case 1:
                     latestNpmPackageDependencies = _a.sent();
@@ -387,7 +348,7 @@ function fillViableVersions(npmPackage, dependency, yarnInfo) {
                     if (!isValidVersion(latestNpmPackageDependencyVersion, requiredMinimumViableVersion)) return [3 /*break*/, 5];
                     latestViableVersion = latestNpmPackageDependencies.version;
                     recommendedViableVersion = latestViableVersion;
-                    earliestViableVersion = latestViableVersion;
+                    minimumViableVersion = latestViableVersion;
                     return [4 /*yield*/, getVersions(npmPackage)];
                 case 2:
                     versions = _a.sent();
@@ -410,10 +371,10 @@ function fillViableVersions(npmPackage, dependency, yarnInfo) {
                             });
                         }); })];
                 case 3:
-                    earliestViableVersion = _a.sent();
-                    if (!(minimumVersion_1 && earliestViableVersion)) return [3 /*break*/, 5];
+                    minimumViableVersion = _a.sent();
+                    if (!(minimumVersion_1 && minimumViableVersion)) return [3 /*break*/, 5];
                     majorVersion_1 = minimumVersion_1[0];
-                    if (!(majorVersion_1 && majorVersion_1 >= cleanPackageVersion(earliestViableVersion)[0])) return [3 /*break*/, 5];
+                    if (!(majorVersion_1 && majorVersion_1 >= cleanPackageVersion(minimumViableVersion)[0])) return [3 /*break*/, 5];
                     sameMajorVersions = versionsGreaterOrEqualToCurrent.filter(function (i) {
                         return cleanPackageVersion(i)[0].toString().startsWith(majorVersion_1.toString());
                     }).reverse();
@@ -439,7 +400,7 @@ function fillViableVersions(npmPackage, dependency, yarnInfo) {
                 case 5:
                     npmPackage.latestViableVersion = latestViableVersion;
                     npmPackage.recommendedViableVersion = recommendedViableVersion;
-                    npmPackage.earliestViableVersion = earliestViableVersion;
+                    npmPackage.minimumViableVersion = minimumViableVersion;
                     return [2 /*return*/, npmPackage];
             }
         });
@@ -447,17 +408,17 @@ function fillViableVersions(npmPackage, dependency, yarnInfo) {
 }
 exports.fillViableVersions = fillViableVersions;
 // lowerDependency: meaning lower level dependency, but higher in the reverse tree
-function fillTreeViability(tree, yarnInfo, npmPackageDependent, lowerDependency) {
+function fillTreeViability(tree, yarnInfo, npmList, npmPackageDependent, lowerDependency) {
     return __awaiter(this, void 0, void 0, function () {
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
                     if (!(npmPackageDependent && lowerDependency)) return [3 /*break*/, 2];
-                    return [4 /*yield*/, fillViableVersions(npmPackageDependent, lowerDependency, yarnInfo)];
+                    return [4 /*yield*/, fillViableVersions(npmPackageDependent, lowerDependency, yarnInfo, npmList)];
                 case 1:
                     _a.sent();
                     _a.label = 2;
-                case 2: return [4 /*yield*/, Promise.all(tree.map(function (subDependent) { return fillTreeViability(subDependent.dependents, yarnInfo, subDependent, npmPackageDependent); }))];
+                case 2: return [4 /*yield*/, Promise.all(tree.map(function (subDependent) { return fillTreeViability(subDependent.dependents, yarnInfo, npmList, subDependent, npmPackageDependent); }))];
                 case 3:
                     _a.sent();
                     return [2 /*return*/, tree];
@@ -495,7 +456,76 @@ function sortFlatDependentTree(tree) {
     });
 }
 exports.sortFlatDependentTree = sortFlatDependentTree;
-// traverseForPackageUpdate(expandedTree, 'redis', '>=3.1.1', '@pluralsight/ps-redis-node')
+function upgradePackages(commandFunction, sortedFlatTree) {
+    return __awaiter(this, void 0, void 0, function () {
+        var upgradeList, upgradeArray, packageName, command;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    upgradeList = new Set();
+                    sortedFlatTree.filter(function (i) { return i.minimumViableVersion; }).forEach(function (i) { return upgradeList.add(i.name); });
+                    upgradeArray = Array.from(upgradeList).reverse();
+                    packageName = upgradeArray.pop();
+                    _a.label = 1;
+                case 1:
+                    if (!packageName) return [3 /*break*/, 4];
+                    command = "yarn upgrade " + packageName;
+                    return [4 /*yield*/, commandFunction(command)];
+                case 2:
+                    _a.sent();
+                    _a.label = 3;
+                case 3:
+                    packageName = upgradeArray.pop();
+                    return [3 /*break*/, 1];
+                case 4: return [2 /*return*/];
+            }
+        });
+    });
+}
+exports.upgradePackages = upgradePackages;
+function upgradeMajorPackages(commandFunction, sortedFlatTree, workspaceList) {
+    return __awaiter(this, void 0, void 0, function () {
+        var upgradeList, upgradeArray, packageName, topLevelPackages;
+        var _this = this;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    upgradeList = new Set();
+                    sortedFlatTree.filter(function (i) { return i.minimumViableVersion; }).forEach(function (i) { return upgradeList.add(i.name); });
+                    upgradeArray = Array.from(upgradeList).reverse();
+                    packageName = upgradeArray.pop();
+                    _a.label = 1;
+                case 1:
+                    if (!packageName) return [3 /*break*/, 4];
+                    topLevelPackages = workspaceList.filter(function (i) { return i.name === packageName; });
+                    if (!topLevelPackages.length) return [3 /*break*/, 3];
+                    return [4 /*yield*/, Promise.all(topLevelPackages.map(function (topLevelPackage) { return __awaiter(_this, void 0, void 0, function () {
+                            var minimumViableVersion, command;
+                            var _a;
+                            return __generator(this, function (_b) {
+                                switch (_b.label) {
+                                    case 0:
+                                        minimumViableVersion = (_a = sortedFlatTree.find(function (i) { return i.name === packageName; })) === null || _a === void 0 ? void 0 : _a.minimumViableVersion;
+                                        command = "yarn " + (topLevelPackage.workspace ? "workspace " + topLevelPackage.workspace + " " : '') + "add " + packageName + "@^" + minimumViableVersion.replace(/\^/g, '') + (!topLevelPackage.workspace ? ' --ignore-workspace-root-check' : '');
+                                        return [4 /*yield*/, commandFunction(command)];
+                                    case 1:
+                                        _b.sent();
+                                        return [2 /*return*/];
+                                }
+                            });
+                        }); }))];
+                case 2:
+                    _a.sent();
+                    _a.label = 3;
+                case 3:
+                    packageName = upgradeArray.pop();
+                    return [3 /*break*/, 1];
+                case 4: return [2 /*return*/];
+            }
+        });
+    });
+}
+exports.upgradeMajorPackages = upgradeMajorPackages;
 function execute(command, json, jsonLine) {
     if (json === void 0) { json = false; }
     if (jsonLine === void 0) { jsonLine = false; }
@@ -538,25 +568,9 @@ function execute(command, json, jsonLine) {
             if (useCache) {
                 localCache[command] = newCommand;
             }
-            return [2 /*return*/, newCommand
-                // return retry(() => {
-                // }, 5, 50)
-            ];
+            return [2 /*return*/, newCommand];
         });
     });
 }
 exports.execute = execute;
 ;
-// async function retry (theThing: Function, retryLimit: number, delay: number): Promise<any> {
-//   let response
-//   try {
-//     response = await theThing()
-//   } catch (err) {
-//     if (retryLimit > 0) {
-//       response = await retry(theThing, retryLimit - 1, delay * 2)
-//     } else {
-//       throw new Error(`No more retries ${JSON.stringify(err)}`)
-//     }
-//   }
-//   return response
-// }

@@ -6,9 +6,11 @@ import {
   isValidVersion,
   buildTree,
   fillTreeViability,
-  sortFlatDependentTree
+  sortFlatDependentTree,
+  upgradePackages,
+  upgradeMajorPackages
 } from '../yarnAudit'
-import { testFlatTree, testYarnAudit } from './testData'
+import { testFlatTree, testNpmList, testYarnAudit } from './testData'
 
 describe('isValidVersion', () => {
   describe('when given a major version higher than acceptable', () => {
@@ -248,10 +250,10 @@ describe.skip('fillViableVersions', () => {
       "name": "css-what",
       "patchedVersions": ">=5.0.1",
       "dependents": []
-    }, yarnInfo)
+    }, yarnInfo, testNpmList)
     expect(test).toEqual({
       "name": "css-select",
-      "leastViableVersion": "4.0.0",
+      "minimumViableVersion": "4.0.0",
       "recommendedViableVersion": "4.1.3",
       "latestViableVersion": "4.1.3",
       "dependents": []
@@ -319,7 +321,7 @@ describe.skip('fillTreeViability', () => {
     }
   }
   it('returns with package info', async () => {
-    await fillTreeViability(test, yarnInfo)
+    await fillTreeViability(test, yarnInfo, testNpmList)
     expect(test).toEqual([
       {
         "name": "css-what",
@@ -337,17 +339,17 @@ describe.skip('fillTreeViability', () => {
                     "dependents": [],
                     "latestViableVersion": "23.1.14",
                     "recommendedViableVersion": "23.1.14",
-                    "leastViableVersion": "2.0.2"
+                    "minimumViableVersion": "2.0.2"
                   }
                 ],
                 "latestViableVersion": "2.3.1",
                 "recommendedViableVersion": "2.3.1",
-                "leastViableVersion": "0.0.1-2"
+                "minimumViableVersion": "0.0.1-2"
               }
             ],
             "latestViableVersion": "4.1.3",
             "recommendedViableVersion": "4.1.3",
-            "leastViableVersion": "4.0.0"
+            "minimumViableVersion": "4.0.0"
           }
         ]
       }
@@ -374,17 +376,17 @@ describe('flattenDependentTree', () => {
                     "dependents": [],
                     "latestViableVersion": "23.1.14",
                     "recommendedViableVersion": "23.1.14",
-                    "leastViableVersion": "2.0.2"
+                    "minimumViableVersion": "2.0.2"
                   }
                 ],
                 "latestViableVersion": "2.3.1",
                 "recommendedViableVersion": "2.3.1",
-                "leastViableVersion": "0.0.1-2"
+                "minimumViableVersion": "0.0.1-2"
               }
             ],
             "latestViableVersion": "4.1.3",
             "recommendedViableVersion": "4.1.3",
-            "leastViableVersion": "4.0.0"
+            "minimumViableVersion": "4.0.0"
           }
         ]
       }
@@ -398,19 +400,19 @@ describe('flattenDependentTree', () => {
                         {
                            "dependents": [],
                            "latestViableVersion": "23.1.14",
-                           "leastViableVersion": "2.0.2",
+                           "minimumViableVersion": "2.0.2",
                            "name": "@pluralsight/ps-design-system-icon",
                            "recommendedViableVersion": "23.1.14"
                         }
                      ],
                      "latestViableVersion": "2.3.1",
-                     "leastViableVersion": "0.0.1-2",
+                     "minimumViableVersion": "0.0.1-2",
                      "name": "svgo",
                      "recommendedViableVersion": "2.3.1"
                   }
                ],
                "latestViableVersion": "4.1.3",
-               "leastViableVersion": "4.0.0",
+               "minimumViableVersion": "4.0.0",
                "name": "css-select",
                "recommendedViableVersion": "4.1.3"
             }
@@ -426,19 +428,19 @@ describe('flattenDependentTree', () => {
                   {
                      "dependents": [],
                      "latestViableVersion": "23.1.14",
-                     "leastViableVersion": "2.0.2",
+                     "minimumViableVersion": "2.0.2",
                      "name": "@pluralsight/ps-design-system-icon",
                      "recommendedViableVersion": "23.1.14"
                   }
                ],
                "latestViableVersion": "2.3.1",
-               "leastViableVersion": "0.0.1-2",
+               "minimumViableVersion": "0.0.1-2",
                "name": "svgo",
                "recommendedViableVersion": "2.3.1"
             }
          ],
          "latestViableVersion": "4.1.3",
-         "leastViableVersion": "4.0.0",
+         "minimumViableVersion": "4.0.0",
          "name": "css-select",
          "recommendedViableVersion": "4.1.3"
       },
@@ -447,20 +449,20 @@ describe('flattenDependentTree', () => {
             {
                "dependents": [],
                "latestViableVersion": "23.1.14",
-               "leastViableVersion": "2.0.2",
+               "minimumViableVersion": "2.0.2",
                "name": "@pluralsight/ps-design-system-icon",
                "recommendedViableVersion": "23.1.14"
             }
          ],
          "latestViableVersion": "2.3.1",
-         "leastViableVersion": "0.0.1-2",
+         "minimumViableVersion": "0.0.1-2",
          "name": "svgo",
          "recommendedViableVersion": "2.3.1"
       },
       {
          "dependents": [],
          "latestViableVersion": "23.1.14",
-         "leastViableVersion": "2.0.2",
+         "minimumViableVersion": "2.0.2",
          "name": "@pluralsight/ps-design-system-icon",
          "recommendedViableVersion": "23.1.14"
       }
@@ -539,35 +541,164 @@ describe('sortFlatDependentTree', () => {
 
   it('sorts it properly', () => {
     expect(sortFlatDependentTree(testFlatTree).map(i => `${i.name}@${i.recommendedViableVersion || i.version}`)).toEqual([
-   "api-external@undefined",
-   "api-internal@undefined",
-   "listener@undefined",
-   "web@undefined",
-   "client@undefined",
-   "@pluralsight/ps-design-system-textarea@undefined",
-   "@pluralsight/ps-design-system-tab@undefined",
-   "@pluralsight/ps-design-system-errors@undefined",
-   "@pluralsight/ps-design-system-tag@undefined",
-   "@pluralsight/ps-design-system-searchinput@undefined",
-   "@pluralsight/ps-design-system-textinput@undefined",
-   "@pluralsight/ps-design-system-button@undefined",
-   "@pluralsight/ps-design-system-table@undefined",
-   "@pluralsight/ps-design-system-drawer@undefined",
-   "@pluralsight/ps-design-system-banner@undefined",
-   "@pluralsight/ps-design-system-dropdown@undefined",
-   "@pluralsight/ps-design-system-actionmenu@undefined",
-   "@pluralsight/ps-design-system-icon@undefined",
-   "svgo@2.3.1",
-   "css-select@4.1.3",
-   "css-what@3.4.2",
-   "firebase-admin@9.9.0",
-   "@firebase/database@0.10.5",
-   "@firebase/component@0.5.3",
-   "@firebase/util@0.3.2",
-   "launchdarkly-node-server-sdk@5.14.5",
-   "@pluralsight/ps-redis-node@undefined",
-   "redis@2.8.0",
-   "redis@2.6.5"
-])
+      "api-external@undefined",
+      "api-internal@undefined",
+      "listener@undefined",
+      "web@undefined",
+      "client@undefined",
+      "@pluralsight/ps-design-system-textarea@undefined",
+      "@pluralsight/ps-design-system-tab@undefined",
+      "@pluralsight/ps-design-system-errors@undefined",
+      "@pluralsight/ps-design-system-tag@undefined",
+      "@pluralsight/ps-design-system-searchinput@undefined",
+      "@pluralsight/ps-design-system-textinput@undefined",
+      "@pluralsight/ps-design-system-button@undefined",
+      "@pluralsight/ps-design-system-table@undefined",
+      "@pluralsight/ps-design-system-drawer@undefined",
+      "@pluralsight/ps-design-system-banner@undefined",
+      "@pluralsight/ps-design-system-dropdown@undefined",
+      "@pluralsight/ps-design-system-actionmenu@undefined",
+      "@pluralsight/ps-design-system-icon@undefined",
+      "svgo@2.3.1",
+      "css-select@4.1.3",
+      "css-what@3.4.2",
+      "firebase-admin@9.9.0",
+      "@firebase/database@0.10.5",
+      "@firebase/component@0.5.3",
+      "@firebase/util@0.3.2",
+      "launchdarkly-node-server-sdk@5.14.5",
+      "@pluralsight/ps-redis-node@undefined",
+      "redis@2.8.0",
+      "redis@2.6.5"
+    ])
+  })
+})
+
+describe('upgradePackage', () => {
+  it('logs the expected commands during a dry run', () => {
+    const commandList: Array<string> = []
+    upgradePackages((command: string) => commandList.push(command), [
+      {
+        "dependents": [],
+        "name": "@pluralsight/ps-design-system-icon",
+      },
+      {
+        "dependents": [
+            {
+              "dependents": [],
+              "name": "@pluralsight/ps-design-system-icon",
+            }
+        ],
+        "name": "svgo",
+      },
+      {
+        "dependents": [
+            {
+              "dependents": [],
+              "name": "svgo",
+            }
+        ],
+        "name": "css-select",
+      },
+      {
+        "dependents": [
+            {
+              "dependents": [],
+              "name": "css-select",
+            }
+        ],
+        "minimumViableVersion": "2.0.0",
+        "name": "css-what",
+      }
+    ])
+    expect(commandList).toEqual(["yarn upgrade css-what"])
+  })
+})
+
+describe('upgradeMajorPackages', () => {
+  it('logs the expected commands during a dry run', () => {
+    const commandList: Array<string> = []
+    upgradeMajorPackages((command: string) => commandList.push(command), [
+      {
+        "dependents": [],
+        "name": "@pluralsight/ps-design-system-icon",
+        "minimumViableVersion": "2.0.5",
+      },
+      {
+        "dependents": [
+            {
+              "dependents": [],
+              "name": "@pluralsight/ps-design-system-icon",
+            }
+        ],
+        "name": "svgo",
+      },
+      {
+        "dependents": [
+            {
+              "dependents": [],
+              "name": "svgo",
+            }
+        ],
+        "minimumViableVersion": "2.0.2",
+        "name": "css-select",
+      },
+      {
+        "dependents": [
+            {
+              "dependents": [],
+              "name": "css-select",
+            }
+        ],
+        "minimumViableVersion": "2.0.3",
+        "name": "css-what",
+      }
+    ], [
+      {name: '@pluralsight/ps-design-system-icon', version: '^1.2.99'}
+    ])
+    expect(commandList).toEqual(["yarn add @pluralsight/ps-design-system-icon@^2.0.5 --ignore-workspace-root-check"])
+  })
+
+  it('logs the expected commands during a dry run', () => {
+    const commandList: Array<string> = []
+    upgradeMajorPackages((command: string) => commandList.push(command), [
+      {
+        "dependents": [],
+        "name": "@pluralsight/ps-design-system-icon",
+        "minimumViableVersion": "2.0.5",
+      },
+      {
+        "dependents": [
+            {
+              "dependents": [],
+              "name": "@pluralsight/ps-design-system-icon",
+            }
+        ],
+        "name": "svgo",
+      },
+      {
+        "dependents": [
+            {
+              "dependents": [],
+              "name": "svgo",
+            }
+        ],
+        "minimumViableVersion": "2.0.2",
+        "name": "css-select",
+      },
+      {
+        "dependents": [
+            {
+              "dependents": [],
+              "name": "css-select",
+            }
+        ],
+        "minimumViableVersion": "2.0.3",
+        "name": "css-what",
+      }
+    ], [
+      {name: '@pluralsight/ps-design-system-icon', version: '^0.2.99'}
+    ])
+    expect(commandList).toEqual(["yarn add @pluralsight/ps-design-system-icon@^2.0.5 --ignore-workspace-root-check"])
   })
 })

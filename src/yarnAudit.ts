@@ -2,6 +2,13 @@ const exec = require('child_process').exec;
 
 const localCache: any = {}
 
+export type CommandOptions = {
+  all?: boolean
+  dry?: boolean
+  major_upgrade?: boolean
+  upgrade?: boolean
+}
+
 export type YarnAudit = {
   type: string;
   data: {
@@ -157,7 +164,7 @@ export type PackageDependency = {
   version?: string
   patchedVersions?: string
   earliestExistingVersion?: string
-  leastViableVersion?: string
+  minimumViableVersion?: string
   recommendedViableVersion?: string
   latestViableVersion?: string
   dependents: Array<PackageDependency>
@@ -173,6 +180,7 @@ type PackageInfo = {
 
 type WorkspacePackage = {
   name: string
+  version: string
   workspace?: string
 }
 
@@ -181,7 +189,7 @@ type PackageVersion = [
   string | number,
   string | number
 ]
-function cleanPackageVersion (version: string): PackageVersion {
+export function cleanPackageVersion (version: string): PackageVersion {
   const [a, b, c] = version.replace(/[^0-9.Xx]*/g, '.').split('.').filter(i => i !== '').map(i => {
     const integer = parseInt(i)
     if (isNaN(integer)) {
@@ -233,20 +241,21 @@ export async function getNpmList(prefix?: string): Promise<NpmList> {
 export async function buildTopLevelPackageList(): Promise<{npmList: NpmList, workspaceList: Array<WorkspacePackage>}> {
   const workspaceList: Array<WorkspacePackage> = []
   const baseNpmList = await getNpmList()
-  const npmList = {...baseNpmList}
+  const npmList = {...baseNpmList}
   await Promise.all(Object.keys(baseNpmList.dependencies).map(async key => {
+    const version = baseNpmList.dependencies[key].version
     if (baseNpmList.dependencies[key].resolved?.startsWith('file')) {
       const workspace = baseNpmList.dependencies[key].resolved.replace(/^file:\.\.\//, '')
       const workspaceNpmList = await getNpmList(`cd ${baseNpmList.dependencies[key].resolved.replace(/^file:\./, '')} &&`)
       Object.keys(workspaceNpmList.dependencies).forEach(workspaceKey => {
-        workspaceList.push({ name: workspaceKey, workspace })
+        workspaceList.push({ name: workspaceKey, version, workspace })
       })
       delete npmList.dependencies[key]
       Object.assign(npmList, workspaceNpmList)
     } else if (!baseNpmList.dependencies[key].resolved) {
       return
     } else {
-      workspaceList.push({ name: key })
+      workspaceList.push({ name: key, version })
     }
   }))
   return {
@@ -371,11 +380,12 @@ function getMinimumYarnLockVersion (yarnInfo: YarnInfo, npmPackage: PackageDepen
   }, undefined)
 }
 
-export async function fillViableVersions (npmPackage: PackageDependency, dependency: PackageDependency, yarnInfo: YarnInfo) {
+export async function fillViableVersions (npmPackage: PackageDependency, dependency: PackageDependency, yarnInfo: YarnInfo, npmList: NpmList) {
+  if (npmPackage.dependents.length === 0 && !npmList.dependencies[npmPackage.name]) return
   let latestViableVersion
   let recommendedViableVersion
-  let leastViableVersion
-  const requiredMinimumViableVersion = dependency.patchedVersions || dependency.leastViableVersion
+  let minimumViableVersion
+  const requiredMinimumViableVersion = dependency.patchedVersions || dependency.minimumViableVersion
 
   const latestNpmPackageDependencies = await getNpmPackageInfo(npmPackage.name)
   if (!latestNpmPackageDependencies) return
@@ -386,7 +396,7 @@ export async function fillViableVersions (npmPackage: PackageDependency, depende
   if (isValidVersion(latestNpmPackageDependencyVersion, requiredMinimumViableVersion)) {
     latestViableVersion = latestNpmPackageDependencies.version
     recommendedViableVersion = latestViableVersion
-    leastViableVersion = latestViableVersion
+    minimumViableVersion = latestViableVersion
 
     const versions = await getVersions(npmPackage)
     const minimumVersion = getMinimumYarnLockVersion(yarnInfo, npmPackage)
@@ -394,15 +404,15 @@ export async function fillViableVersions (npmPackage: PackageDependency, depende
       npmPackage.earliestExistingVersion = minimumVersion.join('.')
     }
     const versionsGreaterOrEqualToCurrent = versions.filter(i => isItGreaterOrEqual(cleanPackageVersion(i), minimumVersion))
-    leastViableVersion = await divideAndConquer(versionsGreaterOrEqualToCurrent, async version => {
+    minimumViableVersion = await divideAndConquer(versionsGreaterOrEqualToCurrent, async version => {
       const packageInfo = await getNpmPackageInfo(npmPackage.name, version)
       if (!packageInfo) return false
       return isValidVersion(packageInfo.dependencies[dependency.name], requiredMinimumViableVersion)
     })
 
-    if (minimumVersion && leastViableVersion) {
+    if (minimumVersion && minimumViableVersion) {
       const [majorVersion] = minimumVersion
-      if (majorVersion && majorVersion >= cleanPackageVersion(leastViableVersion as string)[0]) {
+      if (majorVersion && majorVersion >= cleanPackageVersion(minimumViableVersion as string)[0]) {
         const sameMajorVersions = versionsGreaterOrEqualToCurrent.filter(i => {
           return (cleanPackageVersion(i)[0].toString() as string).startsWith((majorVersion as number).toString())
         }).reverse()
@@ -420,16 +430,16 @@ export async function fillViableVersions (npmPackage: PackageDependency, depende
 
   npmPackage.latestViableVersion = latestViableVersion
   npmPackage.recommendedViableVersion = recommendedViableVersion
-  npmPackage.leastViableVersion = leastViableVersion
+  npmPackage.minimumViableVersion = minimumViableVersion
   return npmPackage
 }
 
 // lowerDependency: meaning lower level dependency, but higher in the reverse tree
-export async function fillTreeViability (tree: Array<PackageDependency>, yarnInfo: YarnInfo, npmPackageDependent?: PackageDependency, lowerDependency?: PackageDependency): Promise<Array<PackageDependency>> {
+export async function fillTreeViability (tree: Array<PackageDependency>, yarnInfo: YarnInfo, npmList: NpmList, npmPackageDependent?: PackageDependency, lowerDependency?: PackageDependency): Promise<Array<PackageDependency>> {
   if (npmPackageDependent && lowerDependency) {
-    await fillViableVersions(npmPackageDependent, lowerDependency, yarnInfo)
+    await fillViableVersions(npmPackageDependent, lowerDependency, yarnInfo, npmList)
   }
-  await Promise.all(tree.map(subDependent => fillTreeViability(subDependent.dependents, yarnInfo, subDependent, npmPackageDependent)))
+  await Promise.all(tree.map(subDependent => fillTreeViability(subDependent.dependents, yarnInfo, npmList, subDependent, npmPackageDependent)))
   return tree
 }
 
@@ -460,6 +470,33 @@ export function sortFlatDependentTree (tree: Array<PackageDependency>): Array<Pa
     }
     return -1
   })
+}
+
+export async function upgradePackages (commandFunction: Function, sortedFlatTree: Array<PackageDependency>) {
+  const upgradeList = new Set<string>()
+  sortedFlatTree.filter(i => i.minimumViableVersion).forEach(i => upgradeList.add(i.name))
+  const upgradeArray = Array.from(upgradeList).reverse()
+  for (var packageName = upgradeArray.pop(); packageName; packageName = upgradeArray.pop()) {
+    const command = `yarn upgrade ${packageName}`
+    await commandFunction(command)
+  }
+}
+
+export async function upgradeMajorPackages (commandFunction: Function, sortedFlatTree: Array<PackageDependency>, workspaceList: Array<WorkspacePackage>) {
+  const upgradeList = new Set<string>()
+  sortedFlatTree.filter(i => i.minimumViableVersion).forEach(i => upgradeList.add(i.name))
+  const upgradeArray = Array.from(upgradeList).reverse()
+  
+  for (var packageName = upgradeArray.pop(); packageName; packageName = upgradeArray.pop()) {
+    const topLevelPackages = workspaceList.filter(i => i.name === packageName)
+    if (topLevelPackages.length) {
+      await Promise.all(topLevelPackages.map(async topLevelPackage => {
+        let minimumViableVersion = sortedFlatTree.find(i => i.name === packageName)?.minimumViableVersion as string
+        const command = `yarn ${topLevelPackage.workspace ? `workspace ${topLevelPackage.workspace} ` : ''}add ${packageName}@^${minimumViableVersion.replace(/\^/g, '')}${!topLevelPackage.workspace ? ' --ignore-workspace-root-check' : ''}`
+        await commandFunction(command)
+      }))
+    }
+  }
 }
 
 export async function execute(command: string, json = false, jsonLine = false) {

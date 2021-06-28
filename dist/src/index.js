@@ -64,86 +64,52 @@ program
 program.parse(process.argv);
 function main(options) {
     return __awaiter(this, void 0, void 0, function () {
-        var viableTree, initialYarnAudits, workspaceList, tree, yarnInfo, flatTree, sortedFlatTree, upgradeList_1, upgradeArray, packageName, command, tree_1, yarnInfo_1, flatTree, sortedFlatTree, upgradeList_2, upgradeArray, packageName, topLevelPackages, postYarnAudits, postTree, postYarnInfo, postViableTree;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
+        var viableTree, initialYarnAudits, _a, npmList, workspaceList, tree, yarnInfo, flatTree, sortedFlatTree, tree_1, yarnInfo_1, flatTree, sortedFlatTree, postYarnAudits, postTree, postYarnInfo, postViableTree;
+        return __generator(this, function (_b) {
+            switch (_b.label) {
                 case 0: return [4 /*yield*/, yarnAudit_1.getYarnAudits()];
                 case 1:
-                    initialYarnAudits = _a.sent();
+                    initialYarnAudits = _b.sent();
                     return [4 /*yield*/, yarnAudit_1.buildTopLevelPackageList()];
                 case 2:
-                    workspaceList = (_a.sent()).workspaceList;
+                    _a = _b.sent(), npmList = _a.npmList, workspaceList = _a.workspaceList;
                     tree = yarnAudit_1.buildTree(initialYarnAudits);
                     return [4 /*yield*/, yarnAudit_1.getYarnInfo()];
                 case 3:
-                    yarnInfo = _a.sent();
-                    return [4 /*yield*/, yarnAudit_1.fillTreeViability(tree, yarnInfo)];
+                    yarnInfo = _b.sent();
+                    return [4 /*yield*/, yarnAudit_1.fillTreeViability(tree, yarnInfo, npmList)];
                 case 4:
-                    viableTree = _a.sent();
-                    if (!(options.all || options.upgrade)) return [3 /*break*/, 9];
+                    viableTree = _b.sent();
+                    if (!(options.all || options.upgrade)) return [3 /*break*/, 6];
                     flatTree = yarnAudit_1.flattenDependentTree(viableTree);
                     sortedFlatTree = yarnAudit_1.sortFlatDependentTree(flatTree);
-                    upgradeList_1 = new Set();
-                    sortedFlatTree.filter(function (i) { return i.latestViableVersion || i.version; }).forEach(function (i) { return upgradeList_1.add(i.name); });
-                    upgradeArray = Array.from(upgradeList_1).reverse();
-                    packageName = upgradeArray.pop();
-                    _a.label = 5;
+                    return [4 /*yield*/, yarnAudit_1.upgradePackages(options.dry ? console.log : yarnAudit_1.execute, sortedFlatTree)];
                 case 5:
-                    if (!(upgradeArray.length > 0)) return [3 /*break*/, 9];
-                    command = "yarn upgrade " + packageName;
-                    if (!options.dry) return [3 /*break*/, 6];
-                    console.log(command);
-                    return [3 /*break*/, 8];
-                case 6: return [4 /*yield*/, yarnAudit_1.execute(command)];
-                case 7:
-                    _a.sent();
-                    _a.label = 8;
-                case 8:
-                    packageName = upgradeArray.pop();
-                    return [3 /*break*/, 5];
-                case 9:
-                    if (!(options.all || options.major_upgrade)) return [3 /*break*/, 16];
-                    if (!(options.all || options.upgrade)) return [3 /*break*/, 12];
+                    _b.sent();
+                    _b.label = 6;
+                case 6:
+                    if (!(options.all || options.major_upgrade)) return [3 /*break*/, 11];
+                    if (!(options.all || options.upgrade)) return [3 /*break*/, 9];
                     tree_1 = yarnAudit_1.buildTree(initialYarnAudits);
                     return [4 /*yield*/, yarnAudit_1.getYarnInfo()];
-                case 10:
-                    yarnInfo_1 = _a.sent();
-                    return [4 /*yield*/, yarnAudit_1.fillTreeViability(tree_1, yarnInfo_1)];
-                case 11:
-                    viableTree = _a.sent();
-                    _a.label = 12;
-                case 12:
+                case 7:
+                    yarnInfo_1 = _b.sent();
+                    return [4 /*yield*/, yarnAudit_1.fillTreeViability(tree_1, yarnInfo_1, npmList)];
+                case 8:
+                    viableTree = _b.sent();
+                    _b.label = 9;
+                case 9:
                     flatTree = yarnAudit_1.flattenDependentTree(viableTree);
                     sortedFlatTree = yarnAudit_1.sortFlatDependentTree(flatTree);
-                    upgradeList_2 = new Set();
-                    sortedFlatTree.filter(function (i) { return i.latestViableVersion || i.version; }).forEach(function (i) { return upgradeList_2.add(i.name); });
-                    upgradeArray = Array.from(upgradeList_2).reverse();
-                    packageName = upgradeArray.pop();
-                    _a.label = 13;
-                case 13:
-                    if (!(upgradeArray.length > 0)) return [3 /*break*/, 16];
-                    topLevelPackages = workspaceList.filter(function (i) { return i.name === packageName; });
-                    if (!topLevelPackages.length) return [3 /*break*/, 15];
-                    return [4 /*yield*/, Promise.all(topLevelPackages.map(function (topLevelPackage) {
-                            var command = "yarn " + (topLevelPackage.workspace ? "workspace " + topLevelPackage.workspace + " " : '') + "add " + packageName + (!topLevelPackage.workspace ? ' --ignore-workspace-root-check' : '');
-                            if (options.dry) {
-                                console.log(command);
-                            }
-                            else {
-                                yarnAudit_1.execute(command);
-                            }
-                        }))];
-                case 14:
-                    _a.sent();
-                    _a.label = 15;
-                case 15:
-                    packageName = upgradeArray.pop();
-                    return [3 /*break*/, 13];
-                case 16:
-                    if (!!options.dry) return [3 /*break*/, 20];
+                    return [4 /*yield*/, yarnAudit_1.upgradeMajorPackages(options.dry ? console.log : yarnAudit_1.execute, sortedFlatTree, workspaceList)];
+                case 10:
+                    _b.sent();
+                    _b.label = 11;
+                case 11:
+                    if (!!options.dry) return [3 /*break*/, 15];
                     return [4 /*yield*/, yarnAudit_1.getYarnAudits()];
-                case 17:
-                    postYarnAudits = _a.sent();
+                case 12:
+                    postYarnAudits = _b.sent();
                     console.log("Initial audits: " + initialYarnAudits.length + ". Post upgrades: " + postYarnAudits.length + ".");
                     if (initialYarnAudits.length > postYarnAudits.length) {
                         console.log(initialYarnAudits.length - postYarnAudits.length + " vulnerabilities automatically resolved");
@@ -162,16 +128,16 @@ function main(options) {
                     }
                     postTree = yarnAudit_1.buildTree(initialYarnAudits);
                     return [4 /*yield*/, yarnAudit_1.getYarnInfo()];
-                case 18:
-                    postYarnInfo = _a.sent();
-                    return [4 /*yield*/, yarnAudit_1.fillTreeViability(postTree, postYarnInfo)];
-                case 19:
-                    postViableTree = _a.sent();
+                case 13:
+                    postYarnInfo = _b.sent();
+                    return [4 /*yield*/, yarnAudit_1.fillTreeViability(postTree, postYarnInfo, npmList)];
+                case 14:
+                    postViableTree = _b.sent();
                     console.log('\nNew Viable Tree:');
                     console.log(JSON.stringify(postViableTree, null, 2));
                     console.log('Good Luck!');
-                    _a.label = 20;
-                case 20: return [2 /*return*/];
+                    _b.label = 15;
+                case 15: return [2 /*return*/];
             }
         });
     });
@@ -179,18 +145,21 @@ function main(options) {
 exports.main = main;
 function log() {
     return __awaiter(this, void 0, void 0, function () {
-        var initialYarnAudits, tree, yarnInfo, viableTree;
+        var initialYarnAudits, npmList, tree, yarnInfo, viableTree;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0: return [4 /*yield*/, yarnAudit_1.getYarnAudits()];
                 case 1:
                     initialYarnAudits = _a.sent();
+                    return [4 /*yield*/, yarnAudit_1.buildTopLevelPackageList()];
+                case 2:
+                    npmList = (_a.sent()).npmList;
                     tree = yarnAudit_1.buildTree(initialYarnAudits);
                     return [4 /*yield*/, yarnAudit_1.getYarnInfo()];
-                case 2:
-                    yarnInfo = _a.sent();
-                    return [4 /*yield*/, yarnAudit_1.fillTreeViability(tree, yarnInfo)];
                 case 3:
+                    yarnInfo = _a.sent();
+                    return [4 /*yield*/, yarnAudit_1.fillTreeViability(tree, yarnInfo, npmList)];
+                case 4:
                     viableTree = _a.sent();
                     console.log(JSON.stringify(viableTree, null, 2));
                     return [2 /*return*/];

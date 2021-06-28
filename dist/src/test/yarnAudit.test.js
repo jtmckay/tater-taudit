@@ -342,12 +342,12 @@ describe.skip('fillViableVersions', function () {
                         "name": "css-what",
                         "patchedVersions": ">=5.0.1",
                         "dependents": []
-                    }, yarnInfo)];
+                    }, yarnInfo, testData_1.testNpmList)];
                 case 1:
                     _a.sent();
                     expect(test).toEqual({
                         "name": "css-select",
-                        "earliestViableVersion": "4.0.0",
+                        "minimumViableVersion": "4.0.0",
                         "recommendedViableVersion": "4.1.3",
                         "latestViableVersion": "4.1.3",
                         "dependents": []
@@ -418,7 +418,7 @@ describe.skip('fillTreeViability', function () {
     it('returns with package info', function () { return __awaiter(void 0, void 0, void 0, function () {
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4 /*yield*/, yarnAudit_1.fillTreeViability(test, yarnInfo)];
+                case 0: return [4 /*yield*/, yarnAudit_1.fillTreeViability(test, yarnInfo, testData_1.testNpmList)];
                 case 1:
                     _a.sent();
                     expect(test).toEqual([
@@ -438,17 +438,17 @@ describe.skip('fillTreeViability', function () {
                                                     "dependents": [],
                                                     "latestViableVersion": "23.1.14",
                                                     "recommendedViableVersion": "23.1.14",
-                                                    "earliestViableVersion": "2.0.2"
+                                                    "minimumViableVersion": "2.0.2"
                                                 }
                                             ],
                                             "latestViableVersion": "2.3.1",
                                             "recommendedViableVersion": "2.3.1",
-                                            "earliestViableVersion": "0.0.1-2"
+                                            "minimumViableVersion": "0.0.1-2"
                                         }
                                     ],
                                     "latestViableVersion": "4.1.3",
                                     "recommendedViableVersion": "4.1.3",
-                                    "earliestViableVersion": "4.0.0"
+                                    "minimumViableVersion": "4.0.0"
                                 }
                             ]
                         }
@@ -477,17 +477,17 @@ describe('flattenDependentTree', function () {
                                         "dependents": [],
                                         "latestViableVersion": "23.1.14",
                                         "recommendedViableVersion": "23.1.14",
-                                        "earliestViableVersion": "2.0.2"
+                                        "minimumViableVersion": "2.0.2"
                                     }
                                 ],
                                 "latestViableVersion": "2.3.1",
                                 "recommendedViableVersion": "2.3.1",
-                                "earliestViableVersion": "0.0.1-2"
+                                "minimumViableVersion": "0.0.1-2"
                             }
                         ],
                         "latestViableVersion": "4.1.3",
                         "recommendedViableVersion": "4.1.3",
-                        "earliestViableVersion": "4.0.0"
+                        "minimumViableVersion": "4.0.0"
                     }
                 ]
             }
@@ -501,19 +501,19 @@ describe('flattenDependentTree', function () {
                                     {
                                         "dependents": [],
                                         "latestViableVersion": "23.1.14",
-                                        "earliestViableVersion": "2.0.2",
+                                        "minimumViableVersion": "2.0.2",
                                         "name": "@pluralsight/ps-design-system-icon",
                                         "recommendedViableVersion": "23.1.14"
                                     }
                                 ],
                                 "latestViableVersion": "2.3.1",
-                                "earliestViableVersion": "0.0.1-2",
+                                "minimumViableVersion": "0.0.1-2",
                                 "name": "svgo",
                                 "recommendedViableVersion": "2.3.1"
                             }
                         ],
                         "latestViableVersion": "4.1.3",
-                        "earliestViableVersion": "4.0.0",
+                        "minimumViableVersion": "4.0.0",
                         "name": "css-select",
                         "recommendedViableVersion": "4.1.3"
                     }
@@ -529,19 +529,19 @@ describe('flattenDependentTree', function () {
                             {
                                 "dependents": [],
                                 "latestViableVersion": "23.1.14",
-                                "earliestViableVersion": "2.0.2",
+                                "minimumViableVersion": "2.0.2",
                                 "name": "@pluralsight/ps-design-system-icon",
                                 "recommendedViableVersion": "23.1.14"
                             }
                         ],
                         "latestViableVersion": "2.3.1",
-                        "earliestViableVersion": "0.0.1-2",
+                        "minimumViableVersion": "0.0.1-2",
                         "name": "svgo",
                         "recommendedViableVersion": "2.3.1"
                     }
                 ],
                 "latestViableVersion": "4.1.3",
-                "earliestViableVersion": "4.0.0",
+                "minimumViableVersion": "4.0.0",
                 "name": "css-select",
                 "recommendedViableVersion": "4.1.3"
             },
@@ -550,20 +550,20 @@ describe('flattenDependentTree', function () {
                     {
                         "dependents": [],
                         "latestViableVersion": "23.1.14",
-                        "earliestViableVersion": "2.0.2",
+                        "minimumViableVersion": "2.0.2",
                         "name": "@pluralsight/ps-design-system-icon",
                         "recommendedViableVersion": "23.1.14"
                     }
                 ],
                 "latestViableVersion": "2.3.1",
-                "earliestViableVersion": "0.0.1-2",
+                "minimumViableVersion": "0.0.1-2",
                 "name": "svgo",
                 "recommendedViableVersion": "2.3.1"
             },
             {
                 "dependents": [],
                 "latestViableVersion": "23.1.14",
-                "earliestViableVersion": "2.0.2",
+                "minimumViableVersion": "2.0.2",
                 "name": "@pluralsight/ps-design-system-icon",
                 "recommendedViableVersion": "23.1.14"
             }
@@ -670,5 +670,131 @@ describe('sortFlatDependentTree', function () {
             "redis@2.8.0",
             "redis@2.6.5"
         ]);
+    });
+});
+describe('upgradePackage', function () {
+    it('logs the expected commands during a dry run', function () {
+        var commandList = [];
+        yarnAudit_1.upgradePackages(function (command) { return commandList.push(command); }, [
+            {
+                "dependents": [],
+                "name": "@pluralsight/ps-design-system-icon",
+            },
+            {
+                "dependents": [
+                    {
+                        "dependents": [],
+                        "name": "@pluralsight/ps-design-system-icon",
+                    }
+                ],
+                "name": "svgo",
+            },
+            {
+                "dependents": [
+                    {
+                        "dependents": [],
+                        "name": "svgo",
+                    }
+                ],
+                "name": "css-select",
+            },
+            {
+                "dependents": [
+                    {
+                        "dependents": [],
+                        "name": "css-select",
+                    }
+                ],
+                "minimumViableVersion": "2.0.0",
+                "name": "css-what",
+            }
+        ]);
+        expect(commandList).toEqual(["yarn upgrade css-what"]);
+    });
+});
+describe('upgradeMajorPackages', function () {
+    it('logs the expected commands during a dry run', function () {
+        var commandList = [];
+        yarnAudit_1.upgradeMajorPackages(function (command) { return commandList.push(command); }, [
+            {
+                "dependents": [],
+                "name": "@pluralsight/ps-design-system-icon",
+                "minimumViableVersion": "2.0.5",
+            },
+            {
+                "dependents": [
+                    {
+                        "dependents": [],
+                        "name": "@pluralsight/ps-design-system-icon",
+                    }
+                ],
+                "name": "svgo",
+            },
+            {
+                "dependents": [
+                    {
+                        "dependents": [],
+                        "name": "svgo",
+                    }
+                ],
+                "minimumViableVersion": "2.0.2",
+                "name": "css-select",
+            },
+            {
+                "dependents": [
+                    {
+                        "dependents": [],
+                        "name": "css-select",
+                    }
+                ],
+                "minimumViableVersion": "2.0.3",
+                "name": "css-what",
+            }
+        ], [
+            { name: '@pluralsight/ps-design-system-icon', version: '^1.2.99' }
+        ]);
+        expect(commandList).toEqual(["yarn add @pluralsight/ps-design-system-icon@^2.0.5 --ignore-workspace-root-check"]);
+    });
+    it('logs the expected commands during a dry run', function () {
+        var commandList = [];
+        yarnAudit_1.upgradeMajorPackages(function (command) { return commandList.push(command); }, [
+            {
+                "dependents": [],
+                "name": "@pluralsight/ps-design-system-icon",
+                "minimumViableVersion": "2.0.5",
+            },
+            {
+                "dependents": [
+                    {
+                        "dependents": [],
+                        "name": "@pluralsight/ps-design-system-icon",
+                    }
+                ],
+                "name": "svgo",
+            },
+            {
+                "dependents": [
+                    {
+                        "dependents": [],
+                        "name": "svgo",
+                    }
+                ],
+                "minimumViableVersion": "2.0.2",
+                "name": "css-select",
+            },
+            {
+                "dependents": [
+                    {
+                        "dependents": [],
+                        "name": "css-select",
+                    }
+                ],
+                "minimumViableVersion": "2.0.3",
+                "name": "css-what",
+            }
+        ], [
+            { name: '@pluralsight/ps-design-system-icon', version: '^0.2.99' }
+        ]);
+        expect(commandList).toEqual(["yarn add @pluralsight/ps-design-system-icon@^2.0.5 --ignore-workspace-root-check"]);
     });
 });
