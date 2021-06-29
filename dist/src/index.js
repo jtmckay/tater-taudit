@@ -42,7 +42,7 @@ var commander_1 = require("commander");
 var yarnAudit_1 = require("./yarnAudit");
 var program = new commander_1.Command();
 program.description('An application for fixing security vulnerabilities')
-    .option('-h, --help', 'Print out command options').addHelpText('after', "\n  Examples:\n    $ tater-audit fix upgrade\n      -- Upgrades all dependents down to the lowest dependency found in the audit with a dependency that has a fix available\n\n    $ tater-audit log\n      -- Creates a tree of all dependents, from the lowest dependency to the highest dependent, found in the audit.\n");
+    .option('-h, --help', 'Print out command options').addHelpText('after', "\n  Examples:\n    $ tater-audit fix\n      -- Upgrades all dependents down to the lowest dependency found in the audit with a dependency that has a fix available.\n\n    $ tater-audit log\n      -- Creates a tree of all dependents, from the lowest dependency to the highest dependent, found in the audit.\n");
 program
     .command('fix')
     .description('Fix audit dependencies')
@@ -54,7 +54,7 @@ program
     .option('-u, --upgrade', 'Upgrade audit dependencies with a fix available')
     .action(function (options) {
     main(options);
-}).addHelpText('after', "\n  Examples:\n    $ tater-audit fix -u\n      -- Upgrades all dependents down to the lowest dependency found in the audit with a dependency that has a fix available\n    $ tater-audit fix\n");
+}).addHelpText('after', "\n  Examples:\n    $ tater-audit fix\n      -- Runs all available fixes but only logs the commands that would be run\n    $ tater-audit fix -a\n      -- Runs all available fixes\n    $ tater-audit fix -d\n      -- Only logs the commands that would be run\n    $ tater-audit fix -u\n      -- Upgrades all dependents down to the lowest dependency found in the audit with a dependency that has a fix available\n    $ tater-audit fix -m\n      -- Upgrades all top level dependencies with a fix available that is not permitted by the current locked version\n");
 program
     .command('log')
     .description('Logs out a tree dependents of any packages identified in the audit')
@@ -67,7 +67,13 @@ function main(options) {
         var viableTree, initialYarnAudits, _a, npmList, workspaceList, tree, yarnInfo, flatTree, sortedFlatTree, tree_1, yarnInfo_1, flatTree, sortedFlatTree, postYarnAudits, postTree, postYarnInfo, postViableTree;
         return __generator(this, function (_b) {
             switch (_b.label) {
-                case 0: return [4 /*yield*/, yarnAudit_1.getYarnAudits()];
+                case 0:
+                    if (!options.upgrade && !options.major_upgrade && !options.all) {
+                        options.all = true;
+                        options.dry = true;
+                        console.log('Try running `tater-audit help fix` for more options. Defaulting to "all" and "dry"');
+                    }
+                    return [4 /*yield*/, yarnAudit_1.getYarnAudits()];
                 case 1:
                     initialYarnAudits = _b.sent();
                     return [4 /*yield*/, yarnAudit_1.buildTopLevelPackageList()];

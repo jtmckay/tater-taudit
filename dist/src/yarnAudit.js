@@ -71,6 +71,8 @@ exports.cleanPackageVersion = cleanPackageVersion;
 function isValidVersion(vulnerablePackageVersion, acceptablePackageVersion) {
     if (!vulnerablePackageVersion)
         return true;
+    if (!acceptablePackageVersion)
+        return false;
     var _a = cleanPackageVersion(vulnerablePackageVersion), vulnerableMajor = _a[0], vulnerableMinor = _a[1], vulnerablePatch = _a[2];
     var _b = cleanPackageVersion(acceptablePackageVersion), acceptableMajor = _b[0], acceptableMinor = _b[1], acceptablePatch = _b[2];
     if (vulnerableMajor > acceptableMajor) {
@@ -327,9 +329,19 @@ function getMinimumYarnLockVersion(yarnInfo, npmPackage) {
         }
     }, undefined);
 }
+function isValid(packageInfo, dependencyName, minimumViableVersion) {
+    var validity = false;
+    if (minimumViableVersion) {
+        validity = isValidVersion(packageInfo.dependencies[dependencyName], minimumViableVersion);
+    }
+    if (!packageInfo.dependencies[dependencyName]) {
+        validity = true;
+    }
+    return validity;
+}
 function fillViableVersions(npmPackage, dependency, yarnInfo, npmList) {
     return __awaiter(this, void 0, void 0, function () {
-        var latestViableVersion, recommendedViableVersion, minimumViableVersion, requiredMinimumViableVersion, latestNpmPackageDependencies, latestNpmPackageDependencyVersion, versions, minimumVersion_1, versionsGreaterOrEqualToCurrent, majorVersion_1, sameMajorVersions, possibleSameMajorVersion;
+        var latestViableVersion, recommendedViableVersion, minimumViableVersion, requiredMinimumViableVersion, latestNpmPackageDependencies, versions, minimumVersion_1, versionsGreaterOrEqualToCurrent, majorVersion_1, sameMajorVersions, possibleSameMajorVersion;
         var _this = this;
         return __generator(this, function (_a) {
             switch (_a.label) {
@@ -342,10 +354,7 @@ function fillViableVersions(npmPackage, dependency, yarnInfo, npmList) {
                     latestNpmPackageDependencies = _a.sent();
                     if (!latestNpmPackageDependencies)
                         return [2 /*return*/];
-                    latestNpmPackageDependencyVersion = latestNpmPackageDependencies.dependencies[dependency.name];
-                    if (!requiredMinimumViableVersion)
-                        return [2 /*return*/];
-                    if (!isValidVersion(latestNpmPackageDependencyVersion, requiredMinimumViableVersion)) return [3 /*break*/, 5];
+                    if (!isValid(latestNpmPackageDependencies, dependency.name, requiredMinimumViableVersion)) return [3 /*break*/, 5];
                     latestViableVersion = latestNpmPackageDependencies.version;
                     recommendedViableVersion = latestViableVersion;
                     minimumViableVersion = latestViableVersion;
@@ -366,7 +375,7 @@ function fillViableVersions(npmPackage, dependency, yarnInfo, npmList) {
                                         packageInfo = _a.sent();
                                         if (!packageInfo)
                                             return [2 /*return*/, false];
-                                        return [2 /*return*/, isValidVersion(packageInfo.dependencies[dependency.name], requiredMinimumViableVersion)];
+                                        return [2 /*return*/, isValid(packageInfo, dependency.name, requiredMinimumViableVersion)];
                                 }
                             });
                         }); })];
@@ -387,7 +396,7 @@ function fillViableVersions(npmPackage, dependency, yarnInfo, npmList) {
                                         packageInfo = _a.sent();
                                         if (!packageInfo)
                                             return [2 /*return*/, false];
-                                        return [2 /*return*/, isValidVersion(packageInfo.dependencies[dependency.name], requiredMinimumViableVersion)];
+                                        return [2 /*return*/, isValid(packageInfo, dependency.name, requiredMinimumViableVersion)];
                                 }
                             });
                         }); })];

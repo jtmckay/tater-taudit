@@ -798,4 +798,47 @@ describe('upgradeMajorPackages', function () {
         ]);
         expect(commandList).toEqual(["yarn add @pluralsight/ps-design-system-icon@^2.0.5 -W"]);
     });
+    it('when the current version is a major version greater, it uses the latest of that major version', function () {
+        var commandList = [];
+        yarnAudit_1.upgradeMajorPackages(function (command) { return commandList.push(command); }, [
+            {
+                "dependents": [],
+                "name": "@pluralsight/ps-design-system-icon",
+                "recommendedViableVersion": "1.0.1",
+                "minimumViableVersion": "0.0.1",
+            },
+            {
+                "dependents": [
+                    {
+                        "dependents": [],
+                        "name": "@pluralsight/ps-design-system-icon",
+                    }
+                ],
+                "name": "svgo",
+            },
+            {
+                "dependents": [
+                    {
+                        "dependents": [],
+                        "name": "svgo",
+                    }
+                ],
+                "minimumViableVersion": "2.0.2",
+                "name": "css-select",
+            },
+            {
+                "dependents": [
+                    {
+                        "dependents": [],
+                        "name": "css-select",
+                    }
+                ],
+                "minimumViableVersion": "2.0.3",
+                "name": "css-what",
+            }
+        ], [
+            { name: '@pluralsight/ps-design-system-icon', version: '^1.0.0' }
+        ]);
+        expect(commandList).toEqual(["yarn add @pluralsight/ps-design-system-icon@^1.0.1 -W"]);
+    });
 });

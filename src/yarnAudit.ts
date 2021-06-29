@@ -201,8 +201,9 @@ export function cleanPackageVersion (version: string): PackageVersion {
   return [a, b, c]
 }
 
-export function isValidVersion (vulnerablePackageVersion: string, acceptablePackageVersion: string) {
+export function isValidVersion (vulnerablePackageVersion?: string, acceptablePackageVersion?: string) {
   if (!vulnerablePackageVersion) return true
+  if (!acceptablePackageVersion) return false
   const [vulnerableMajor, vulnerableMinor, vulnerablePatch] = cleanPackageVersion(vulnerablePackageVersion)
   const [acceptableMajor, acceptableMinor, acceptablePatch] = cleanPackageVersion(acceptablePackageVersion)
   if (vulnerableMajor > acceptableMajor) {
@@ -380,6 +381,17 @@ function getMinimumYarnLockVersion (yarnInfo: YarnInfo, npmPackage: PackageDepen
   }, undefined)
 }
 
+function isValid (packageInfo: PackageInfo, dependencyName: string, minimumViableVersion?: string): boolean {
+  let validity = false
+  if (minimumViableVersion) {
+    validity = isValidVersion(packageInfo.dependencies[dependencyName], minimumViableVersion)
+  }
+  if (!packageInfo.dependencies[dependencyName]) {
+    validity = true
+  }
+  return validity
+}
+
 export async function fillViableVersions (npmPackage: PackageDependency, dependency: PackageDependency, yarnInfo: YarnInfo, npmList: NpmList) {
   if (npmPackage.dependents.length === 0 && !npmList.dependencies[npmPackage.name]) return
   let latestViableVersion
@@ -390,10 +402,7 @@ export async function fillViableVersions (npmPackage: PackageDependency, depende
   const latestNpmPackageDependencies = await getNpmPackageInfo(npmPackage.name)
   if (!latestNpmPackageDependencies) return
 
-  const latestNpmPackageDependencyVersion = latestNpmPackageDependencies.dependencies[dependency.name]
-  if (!requiredMinimumViableVersion) return
-
-  if (isValidVersion(latestNpmPackageDependencyVersion, requiredMinimumViableVersion)) {
+  if (isValid(latestNpmPackageDependencies, dependency.name, requiredMinimumViableVersion)) {
     latestViableVersion = latestNpmPackageDependencies.version
     recommendedViableVersion = latestViableVersion
     minimumViableVersion = latestViableVersion
@@ -407,7 +416,7 @@ export async function fillViableVersions (npmPackage: PackageDependency, depende
     minimumViableVersion = await divideAndConquer(versionsGreaterOrEqualToCurrent, async version => {
       const packageInfo = await getNpmPackageInfo(npmPackage.name, version)
       if (!packageInfo) return false
-      return isValidVersion(packageInfo.dependencies[dependency.name], requiredMinimumViableVersion)
+      return isValid(packageInfo, dependency.name, requiredMinimumViableVersion)
     })
 
     if (minimumVersion && minimumViableVersion) {
@@ -419,7 +428,7 @@ export async function fillViableVersions (npmPackage: PackageDependency, depende
         const possibleSameMajorVersion = await divideAndConquer(sameMajorVersions, async version => {
           const packageInfo = await getNpmPackageInfo(npmPackage.name, version)
           if (!packageInfo) return false
-          return isValidVersion(packageInfo.dependencies[dependency.name], requiredMinimumViableVersion)
+          return isValid(packageInfo, dependency.name, requiredMinimumViableVersion)
         })
         if (possibleSameMajorVersion) {
           recommendedViableVersion = possibleSameMajorVersion
