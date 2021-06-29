@@ -577,7 +577,7 @@ describe('sortFlatDependentTree', () => {
 describe('upgradePackage', () => {
   it('logs the expected commands during a dry run', () => {
     const commandList: Array<string> = []
-    upgradePackages((command: string) => commandList.push(command), [
+    upgradePackages((command: string) => commandList.push(command), false, [
       {
         "dependents": [],
         "name": "@pluralsight/ps-design-system-icon",
@@ -618,7 +618,7 @@ describe('upgradePackage', () => {
 describe('upgradeMajorPackages', () => {
   it('logs the expected commands during a dry run', () => {
     const commandList: Array<string> = []
-    upgradeMajorPackages((command: string) => commandList.push(command), [
+    upgradeMajorPackages((command: string) => commandList.push(command), false, [
       {
         "dependents": [],
         "name": "@pluralsight/ps-design-system-icon",
@@ -662,7 +662,7 @@ describe('upgradeMajorPackages', () => {
 
   it('logs the expected commands during a dry run', () => {
     const commandList: Array<string> = []
-    upgradeMajorPackages((command: string) => commandList.push(command), [
+    upgradeMajorPackages((command: string) => commandList.push(command), false, [
       {
         "dependents": [],
         "name": "@pluralsight/ps-design-system-icon",
@@ -705,7 +705,7 @@ describe('upgradeMajorPackages', () => {
 
   it('when the current version is a major version greater, it uses the latest of that major version', () => {
     const commandList: Array<string> = []
-    upgradeMajorPackages((command: string) => commandList.push(command), [
+    upgradeMajorPackages((command: string) => commandList.push(command), false, [
       {
         "dependents": [],
         "name": "@pluralsight/ps-design-system-icon",

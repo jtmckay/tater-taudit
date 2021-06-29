@@ -675,7 +675,7 @@ describe('sortFlatDependentTree', function () {
 describe('upgradePackage', function () {
     it('logs the expected commands during a dry run', function () {
         var commandList = [];
-        yarnAudit_1.upgradePackages(function (command) { return commandList.push(command); }, [
+        yarnAudit_1.upgradePackages(function (command) { return commandList.push(command); }, false, [
             {
                 "dependents": [],
                 "name": "@pluralsight/ps-design-system-icon",
@@ -715,7 +715,7 @@ describe('upgradePackage', function () {
 describe('upgradeMajorPackages', function () {
     it('logs the expected commands during a dry run', function () {
         var commandList = [];
-        yarnAudit_1.upgradeMajorPackages(function (command) { return commandList.push(command); }, [
+        yarnAudit_1.upgradeMajorPackages(function (command) { return commandList.push(command); }, false, [
             {
                 "dependents": [],
                 "name": "@pluralsight/ps-design-system-icon",
@@ -758,7 +758,7 @@ describe('upgradeMajorPackages', function () {
     });
     it('logs the expected commands during a dry run', function () {
         var commandList = [];
-        yarnAudit_1.upgradeMajorPackages(function (command) { return commandList.push(command); }, [
+        yarnAudit_1.upgradeMajorPackages(function (command) { return commandList.push(command); }, false, [
             {
                 "dependents": [],
                 "name": "@pluralsight/ps-design-system-icon",
@@ -800,7 +800,7 @@ describe('upgradeMajorPackages', function () {
     });
     it('when the current version is a major version greater, it uses the latest of that major version', function () {
         var commandList = [];
-        yarnAudit_1.upgradeMajorPackages(function (command) { return commandList.push(command); }, [
+        yarnAudit_1.upgradeMajorPackages(function (command) { return commandList.push(command); }, false, [
             {
                 "dependents": [],
                 "name": "@pluralsight/ps-design-system-icon",

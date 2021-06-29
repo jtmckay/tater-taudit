@@ -6,6 +6,7 @@ export type CommandOptions = {
   all?: boolean
   dry?: boolean
   major_upgrade?: boolean
+  npm?: boolean
   upgrade?: boolean
 }
 
@@ -481,17 +482,19 @@ export function sortFlatDependentTree (tree: Array<PackageDependency>): Array<Pa
   })
 }
 
-export async function upgradePackages (commandFunction: Function, sortedFlatTree: Array<PackageDependency>) {
+export async function upgradePackages (commandFunction: Function, npmCommands: boolean, sortedFlatTree: Array<PackageDependency>) {
   const upgradeList = new Set<string>()
   sortedFlatTree.filter(i => i.minimumViableVersion).forEach(i => upgradeList.add(i.name))
   const upgradeArray = Array.from(upgradeList).reverse()
   for (var packageName = upgradeArray.pop(); packageName; packageName = upgradeArray.pop()) {
-    const command = `yarn upgrade ${packageName}`
+    const command = npmCommands
+    ? `npm update ${packageName}`
+    : `yarn upgrade ${packageName}`
     await commandFunction(command)
   }
 }
 
-export async function upgradeMajorPackages (commandFunction: Function, sortedFlatTree: Array<PackageDependency>, workspaceList: Array<WorkspacePackage>) {
+export async function upgradeMajorPackages (commandFunction: Function, npmCommands: boolean, sortedFlatTree: Array<PackageDependency>, workspaceList: Array<WorkspacePackage>) {
   const upgradeList = new Set<string>()
   sortedFlatTree.filter(i => i.minimumViableVersion).forEach(i => upgradeList.add(i.name))
   const upgradeArray = Array.from(upgradeList).reverse()
@@ -501,7 +504,9 @@ export async function upgradeMajorPackages (commandFunction: Function, sortedFla
     if (topLevelPackages.length) {
       await Promise.all(topLevelPackages.map(async topLevelPackage => {
         let npmPackage = sortedFlatTree.find(i => i.name === packageName)
-        const command = `yarn ${topLevelPackage.workspace ? `workspace ${topLevelPackage.workspace} ` : ''}add ${packageName}@^${(npmPackage?.recommendedViableVersion || npmPackage?.minimumViableVersion as string).replace(/\^/g, '')}${!topLevelPackage.workspace ? ' -W' : ''}`
+        const command = npmCommands
+        ? `npm install ${packageName}@^${(npmPackage?.recommendedViableVersion || npmPackage?.minimumViableVersion as string).replace(/\^/g, '')}`
+        : `yarn ${topLevelPackage.workspace ? `workspace ${topLevelPackage.workspace} ` : ''}add ${packageName}@^${(npmPackage?.recommendedViableVersion || npmPackage?.minimumViableVersion as string).replace(/\^/g, '')}${!topLevelPackage.workspace ? ' -W' : ''}`
         await commandFunction(command)
       }))
     }

@@ -50,6 +50,7 @@ program
     .option('-d, --dry', 'Log commands that would effect the repo instead of running them')
     // .option('-d, --dependent_tree <path>', 'Path to the dependent tree (to avoid regenerating)')
     .option('-m, --major_upgrade', 'Attempt to install newer versions (perhaps major; breaking changes)')
+    .option('-n, --npm', 'Replace yarn with npm in output commands')
     // .option('-t, --test_command <command>', 'Command to run between changes to apply as many fixes as possible without breaking changes')
     .option('-u, --upgrade', 'Upgrade audit dependencies with a fix available')
     .action(function (options) {
@@ -89,7 +90,7 @@ function main(options) {
                     if (!(options.all || options.upgrade)) return [3 /*break*/, 6];
                     flatTree = yarnAudit_1.flattenDependentTree(viableTree);
                     sortedFlatTree = yarnAudit_1.sortFlatDependentTree(flatTree);
-                    return [4 /*yield*/, yarnAudit_1.upgradePackages(options.dry ? console.log : yarnAudit_1.execute, sortedFlatTree)];
+                    return [4 /*yield*/, yarnAudit_1.upgradePackages(options.dry ? console.log : yarnAudit_1.execute, options.npm || false, sortedFlatTree)];
                 case 5:
                     _b.sent();
                     _b.label = 6;
@@ -107,7 +108,7 @@ function main(options) {
                 case 9:
                     flatTree = yarnAudit_1.flattenDependentTree(viableTree);
                     sortedFlatTree = yarnAudit_1.sortFlatDependentTree(flatTree);
-                    return [4 /*yield*/, yarnAudit_1.upgradeMajorPackages(options.dry ? console.log : yarnAudit_1.execute, sortedFlatTree, workspaceList)];
+                    return [4 /*yield*/, yarnAudit_1.upgradeMajorPackages(options.dry ? console.log : yarnAudit_1.execute, options.npm || false, sortedFlatTree, workspaceList)];
                 case 10:
                     _b.sent();
                     _b.label = 11;

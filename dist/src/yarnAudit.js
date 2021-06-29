@@ -465,7 +465,7 @@ function sortFlatDependentTree(tree) {
     });
 }
 exports.sortFlatDependentTree = sortFlatDependentTree;
-function upgradePackages(commandFunction, sortedFlatTree) {
+function upgradePackages(commandFunction, npmCommands, sortedFlatTree) {
     return __awaiter(this, void 0, void 0, function () {
         var upgradeList, upgradeArray, packageName, command;
         return __generator(this, function (_a) {
@@ -478,7 +478,9 @@ function upgradePackages(commandFunction, sortedFlatTree) {
                     _a.label = 1;
                 case 1:
                     if (!packageName) return [3 /*break*/, 4];
-                    command = "yarn upgrade " + packageName;
+                    command = npmCommands
+                        ? "npm update " + packageName
+                        : "yarn upgrade " + packageName;
                     return [4 /*yield*/, commandFunction(command)];
                 case 2:
                     _a.sent();
@@ -492,7 +494,7 @@ function upgradePackages(commandFunction, sortedFlatTree) {
     });
 }
 exports.upgradePackages = upgradePackages;
-function upgradeMajorPackages(commandFunction, sortedFlatTree, workspaceList) {
+function upgradeMajorPackages(commandFunction, npmCommands, sortedFlatTree, workspaceList) {
     return __awaiter(this, void 0, void 0, function () {
         var upgradeList, upgradeArray, packageName, topLevelPackages;
         var _this = this;
@@ -514,7 +516,9 @@ function upgradeMajorPackages(commandFunction, sortedFlatTree, workspaceList) {
                                 switch (_a.label) {
                                     case 0:
                                         npmPackage = sortedFlatTree.find(function (i) { return i.name === packageName; });
-                                        command = "yarn " + (topLevelPackage.workspace ? "workspace " + topLevelPackage.workspace + " " : '') + "add " + packageName + "@^" + ((npmPackage === null || npmPackage === void 0 ? void 0 : npmPackage.recommendedViableVersion) || (npmPackage === null || npmPackage === void 0 ? void 0 : npmPackage.minimumViableVersion)).replace(/\^/g, '') + (!topLevelPackage.workspace ? ' -W' : '');
+                                        command = npmCommands
+                                            ? "npm install " + packageName + "@^" + ((npmPackage === null || npmPackage === void 0 ? void 0 : npmPackage.recommendedViableVersion) || (npmPackage === null || npmPackage === void 0 ? void 0 : npmPackage.minimumViableVersion)).replace(/\^/g, '')
+                                            : "yarn " + (topLevelPackage.workspace ? "workspace " + topLevelPackage.workspace + " " : '') + "add " + packageName + "@^" + ((npmPackage === null || npmPackage === void 0 ? void 0 : npmPackage.recommendedViableVersion) || (npmPackage === null || npmPackage === void 0 ? void 0 : npmPackage.minimumViableVersion)).replace(/\^/g, '') + (!topLevelPackage.workspace ? ' -W' : '');
                                         return [4 /*yield*/, commandFunction(command)];
                                     case 1:
                                         _a.sent();

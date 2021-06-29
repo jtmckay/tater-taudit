@@ -34,6 +34,7 @@ program
   .option('-d, --dry', 'Log commands that would effect the repo instead of running them')
   // .option('-d, --dependent_tree <path>', 'Path to the dependent tree (to avoid regenerating)')
   .option('-m, --major_upgrade', 'Attempt to install newer versions (perhaps major; breaking changes)')
+  .option('-n, --npm', 'Replace yarn with npm in output commands')
   // .option('-t, --test_command <command>', 'Command to run between changes to apply as many fixes as possible without breaking changes')
   .option('-u, --upgrade', 'Upgrade audit dependencies with a fix available')
   .action((options: CommandOptions) => {
@@ -84,7 +85,7 @@ export async function main(options: CommandOptions) {
     const flatTree = flattenDependentTree(viableTree)
     const sortedFlatTree = sortFlatDependentTree(flatTree)
 
-    await upgradePackages(options.dry ? console.log : execute, sortedFlatTree)
+    await upgradePackages(options.dry ? console.log : execute, options.npm || false, sortedFlatTree)
   }
 
   if (options.all || options.major_upgrade) {
@@ -96,7 +97,7 @@ export async function main(options: CommandOptions) {
     const flatTree = flattenDependentTree(viableTree)
     const sortedFlatTree = sortFlatDependentTree(flatTree)
 
-    await upgradeMajorPackages(options.dry ? console.log : execute, sortedFlatTree, workspaceList)
+    await upgradeMajorPackages(options.dry ? console.log : execute, options.npm || false, sortedFlatTree, workspaceList)
   }
   
   if (!options.dry) {
