@@ -1,6 +1,6 @@
 {
   "name": "tater-audit",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "Security vulnerability assistant",
   "main": "dist/src/index.js",
   "bin": {
