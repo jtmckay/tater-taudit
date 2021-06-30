@@ -18,6 +18,7 @@ import {
 const program = new Command();
 
 program.description('An application for fixing security vulnerabilities')
+.version('0.0.8')
 .option('-h, --help', 'Print out command options').addHelpText('after', `
   Examples:
     $ tater-audit fix
