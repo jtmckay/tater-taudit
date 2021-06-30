@@ -8,7 +8,7 @@ Resolve security vulnerabilities found with yarn audit (Dependabot or npm audit)
 Find what packages need to be updated. This command will log commands that could be used to potentially resolve vulnerabilities:
 
 ```
-npx tater-audit@latest fix
+npx tater-taudit@latest fix
 ```
 
 Example output:
@@ -20,7 +20,7 @@ yarn upgrade css-select
 Automatically run the recommended commands by passing "-a":
 
 ```
-npx tater-audit@latest fix -a
+npx tater-taudit@latest fix -a
 ```
 
 ## When you want details
@@ -28,7 +28,7 @@ npx tater-audit@latest fix -a
 The "log" command will give you the details of your project vulnerabilities and potential routes to fix. This is sometimes the best path forward to resolve dependencies that haven't made it up the tree to their parents yet.
 
 ```
-npx tater-audit@latest log
+npx tater-taudit@latest log
 ```
 Example output:
 ```
@@ -77,14 +77,14 @@ If there is a fix available starting with multiple major versions, it will attem
   -h, --help           display help for command
 
   Examples:
-    $ tater-audit fix
+    $ tater-taudit fix
       -- Runs all available fixes but only logs the commands that would be run
-    $ tater-audit fix -a
+    $ tater-taudit fix -a
       -- Runs all available fixes
-    $ tater-audit fix -d
+    $ tater-taudit fix -d
       -- Only logs the commands that would be run
-    $ tater-audit fix -u
+    $ tater-taudit fix -u
       -- Upgrades all dependents down to the lowest dependency found in the audit with a dependency that has a fix available
-    $ tater-audit fix -m
+    $ tater-taudit fix -m
       -- Upgrades all top level dependencies with a fix available that is not permitted by the current locked version
 ```

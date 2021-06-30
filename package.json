@@ -1,10 +1,10 @@
 {
-  "name": "tater-audit",
-  "version": "0.0.8",
+  "name": "tater-taudit",
+  "version": "0.1.0",
   "description": "Security vulnerability assistant",
   "main": "dist/src/index.js",
   "bin": {
-    "tater-audit": "./dist/src/index.js"
+    "tater-taudit": "./dist/src/index.js"
   },
   "scripts": {
     "test": "jest --watch",
@@ -13,7 +13,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/jtmckay/tater-audit.git"
+    "url": "git+https://github.com/jtmckay/tater-taudit.git"
   },
   "keywords": [
     "Security",
@@ -23,9 +23,9 @@
   "author": "Taylor McKay",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/jtmckay/tater-audit/issues"
+    "url": "https://github.com/jtmckay/tater-taudit/issues"
   },
-  "homepage": "https://github.com/jtmckay/tater-audit#readme",
+  "homepage": "https://github.com/jtmckay/tater-taudit#readme",
   "devDependencies": {
     "@types/jest": "^26.0.23",
     "@types/node": "^15.12.5",
