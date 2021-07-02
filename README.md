@@ -33,28 +33,32 @@ npx tater-taudit@latest log
 Example output:
 ```
 {
-  "name": "css-what",
-  "patchedVersions": ">=5.0.1",
   "dependents": [
     {
-      "name": "css-select",
       "dependents": [
         {
-          "name": "svgo",
           "dependents": [],
+          "name": "svgo",
           "earliestExistingVersion": "1.3.2",
           "latestViableVersion": "2.3.1",
           "recommendedViableVersion": "2.3.1",
           "minimumViableVersion": "2.3.1"
         }
       ],
+      "name": "css-select",
       "earliestExistingVersion": "0.1.1",
       "latestViableVersion": "4.1.3",
       "recommendedViableVersion": "4.1.3",
       "minimumViableVersion": "4.0.0"
     }
   ],
-  "version": "3.4.2"
+  "name": "css-what",
+  "patchedVersions": ">=5.0.1",
+  "version": "3.4.2",
+  "earliestExistingVersion": "3.4.2",
+  "latestViableVersion": "5.0.1",
+  "recommendedViableVersion": "5.0.1",
+  "minimumViableVersion": "5.0.1"
 }
 ```
 

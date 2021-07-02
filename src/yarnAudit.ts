@@ -274,7 +274,7 @@ function addDependent (tree: Array<PackageDependency>, npmPackage: PackageDepend
   }
   if (dependents.length) {
     const nextDependentsList = [...dependents]
-    const nextPackage = { name: nextDependentsList.pop() as string, dependents: [] }
+    const nextPackage = { dependents: [], name: nextDependentsList.pop() as string }
     addDependent(toUpdate.dependents, nextPackage, nextDependentsList)
   }
 }
