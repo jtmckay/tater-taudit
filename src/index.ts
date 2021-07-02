@@ -18,7 +18,7 @@ import {
 const program = new Command();
 
 program.description('An application for fixing security vulnerabilities')
-.version('0.1.3')
+.version('0.1.4')
 .option('-h, --help', 'Print out command options').addHelpText('after', `
   Examples:
     $ tater-taudit fix

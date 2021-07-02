@@ -551,6 +551,9 @@ export async function execute(command: string, json = false, jsonLine = false) {
         }
       } catch (err) {
         console.log('Failed command:', command)
+        if (command.includes('yarn')) {
+          console.log('Please make sure yarn is installed')
+        }
         return reject(err)
       }
       return resolve(response)
