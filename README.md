@@ -1,11 +1,16 @@
 # Security vulnerability assistant
 
-
 Resolve security vulnerabilities found with yarn audit (Dependabot or npm audit). Automatically fix them when possible, and get assistance when not. It will walk the tree of dependencies to find the best path forward.
 
-## Getting Started
+## Requirements
+Requires npm and yarn to be globally installed, but works with package-lock.json or yarn.lock files.
 
-Find what packages need to be updated. This command will log commands that could be used to potentially resolve vulnerabilities:
+Run commands in the directory containing your main package.json file.
+
+## Getting Started
+If you've already upgraded to the latest version of everything, look at "When you want details" below.
+
+Find what packages need to be updated. In you package.json directory, run this command to get a list of commands that could be used to potentially resolve vulnerabilities:
 
 ```
 npx tater-taudit@latest fix

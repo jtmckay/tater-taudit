@@ -18,7 +18,7 @@ import {
 const program = new Command();
 
 program.description('An application for fixing security vulnerabilities')
-.version('0.1.2')
+.version('0.1.3')
 .option('-h, --help', 'Print out command options').addHelpText('after', `
   Examples:
     $ tater-taudit fix
@@ -86,7 +86,10 @@ export async function main(options: CommandOptions) {
     const flatTree = flattenDependentTree(viableTree)
     const sortedFlatTree = sortFlatDependentTree(flatTree)
 
-    await upgradePackages(options.dry ? console.log : execute, options.npm || false, sortedFlatTree)
+    await upgradePackages(options.dry ? console.log : (command: string) => {
+      console.log(`Running "${command}" in child process`)
+      execute(command)
+    }, options.npm || false, sortedFlatTree)
   }
 
   if (options.all || options.major_upgrade) {
@@ -98,7 +101,10 @@ export async function main(options: CommandOptions) {
     const flatTree = flattenDependentTree(viableTree)
     const sortedFlatTree = sortFlatDependentTree(flatTree)
 
-    await upgradeMajorPackages(options.dry ? console.log : execute, options.npm || false, sortedFlatTree, workspaceList)
+    await upgradeMajorPackages(options.dry ? console.log : (command: string) => {
+      console.log(`Running "${command}" in child process`)
+      execute(command)
+    }, options.npm || false, sortedFlatTree, workspaceList)
   }
   
   if (!options.dry) {
