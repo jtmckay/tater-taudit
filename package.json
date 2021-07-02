@@ -1,6 +1,6 @@
 {
   "name": "tater-taudit",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Security vulnerability assistant",
   "main": "dist/src/index.js",
   "bin": {

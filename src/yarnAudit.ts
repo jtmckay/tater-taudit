@@ -283,7 +283,11 @@ export function buildTree (yarnAudits: Array<YarnAudit>): Array<PackageDependenc
   const tree: Array<PackageDependency> = []
   yarnAudits.forEach((yarnAudit) => {
     if (yarnAudit.type === 'auditAdvisory') {
-      const npmPackage: PackageDependency = { name: yarnAudit.data.advisory.module_name, patchedVersions: yarnAudit.data.advisory.patched_versions, dependents: [] }
+      const npmPackage: PackageDependency = {
+        dependents: [],
+        name: yarnAudit.data.advisory.module_name,
+        patchedVersions: yarnAudit.data.advisory.patched_versions,
+      }
       yarnAudit.data.advisory.findings.forEach((finding) => {
         finding.paths.forEach((path: any) => {
           const dependencyList = path.split('>')
@@ -384,11 +388,15 @@ function getMinimumYarnLockVersion (yarnInfo: YarnInfo, npmPackage: PackageDepen
 
 function isValid (packageInfo: PackageInfo, dependencyName: string, minimumViableVersion?: string): boolean {
   let validity = false
-  if (minimumViableVersion) {
-    validity = isValidVersion(packageInfo.dependencies[dependencyName], minimumViableVersion)
-  }
-  if (!packageInfo.dependencies[dependencyName]) {
-    validity = true
+  if (packageInfo.name === dependencyName) {
+    validity = isValidVersion(packageInfo.version, minimumViableVersion)
+  } else {
+    if (minimumViableVersion) {
+      validity = isValidVersion(packageInfo.dependencies[dependencyName], minimumViableVersion)
+    }
+    if (!packageInfo.dependencies[dependencyName]) {
+      validity = true
+    }
   }
   return validity
 }
@@ -448,6 +456,8 @@ export async function fillViableVersions (npmPackage: PackageDependency, depende
 export async function fillTreeViability (tree: Array<PackageDependency>, yarnInfo: YarnInfo, npmList: NpmList, npmPackageDependent?: PackageDependency, lowerDependency?: PackageDependency): Promise<Array<PackageDependency>> {
   if (npmPackageDependent && lowerDependency) {
     await fillViableVersions(npmPackageDependent, lowerDependency, yarnInfo, npmList)
+  } else if (npmPackageDependent) {
+    await fillViableVersions(npmPackageDependent, npmPackageDependent, yarnInfo, npmList)
   }
   await Promise.all(tree.map(subDependent => fillTreeViability(subDependent.dependents, yarnInfo, npmList, subDependent, npmPackageDependent)))
   return tree
@@ -513,13 +523,15 @@ export async function upgradeMajorPackages (commandFunction: Function, npmComman
   }
 }
 
+const maxBuffer = 1024 * 1024 * 10
+
 export async function execute(command: string, json = false, jsonLine = false) {
   const useCache = command.startsWith('npm view')
   if (useCache && localCache[command]) {
     return localCache[command]
   }
   const newCommand = new Promise((resolve, reject) => {
-    exec(command, function(error: any, stdout: string) {
+    exec(command, { maxBuffer }, function(error: any, stdout: string) {
       // if (stderr) {
       //   console.log('stderr', stderr)
       // }

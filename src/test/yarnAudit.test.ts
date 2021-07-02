@@ -207,7 +207,7 @@ describe('divideAndConquer', () => {
 describe.skip('fillViableVersions', () => {
   const test = {
     "name": "css-select",
-    "dependents": []
+    "dependents": [{name: 'svgo', dependents: []}]
   }
   const yarnInfo = {
     "type": "tree",
@@ -253,10 +253,16 @@ describe.skip('fillViableVersions', () => {
     }, yarnInfo, testNpmList)
     expect(test).toEqual({
       "name": "css-select",
+      "earliestExistingVersion": "2.1.0",
       "minimumViableVersion": "4.0.0",
       "recommendedViableVersion": "4.1.3",
       "latestViableVersion": "4.1.3",
-      "dependents": []
+      "dependents": [
+        {
+          name: 'svgo',
+          dependents: []
+        }
+      ]
     })
   })
 })
@@ -290,6 +296,19 @@ describe.skip('fillTreeViability', () => {
       "type": "list",
       "trees": [
         {
+          "name": "css-what@3.4.2",
+          "children": [
+            {
+              "name": "css-what@^3.2.1",
+              "color": "dim",
+              "shadow": true
+            },
+          ],
+          "hint": null,
+          "color": null,
+          "depth": 0
+        },
+        {
           "name": "css-select@2.1.0",
           "children": [
             {
@@ -321,7 +340,13 @@ describe.skip('fillTreeViability', () => {
     }
   }
   it('returns with package info', async () => {
-    await fillTreeViability(test, yarnInfo, testNpmList)
+    await fillTreeViability(test, yarnInfo, {
+      name: 'test',
+      version: '0.0.0',
+      dependencies: {
+        '@pluralsight/ps-design-system-icon': { resolved: 'asdf', version: "1.0.1" }
+      }
+    })
     expect(test).toEqual([
       {
         "name": "css-what",
@@ -337,8 +362,8 @@ describe.skip('fillTreeViability', () => {
                   {
                     "name": "@pluralsight/ps-design-system-icon",
                     "dependents": [],
-                    "latestViableVersion": "23.1.14",
-                    "recommendedViableVersion": "23.1.14",
+                    "latestViableVersion": "23.1.15",
+                    "recommendedViableVersion": "23.1.15",
                     "minimumViableVersion": "2.0.2"
                   }
                 ],
@@ -347,11 +372,16 @@ describe.skip('fillTreeViability', () => {
                 "minimumViableVersion": "0.0.1-2"
               }
             ],
+            "earliestExistingVersion": "2.1.0",
             "latestViableVersion": "4.1.3",
             "recommendedViableVersion": "4.1.3",
             "minimumViableVersion": "4.0.0"
           }
-        ]
+        ],
+        "earliestExistingVersion": "3.4.2",
+        "latestViableVersion": "5.0.1",
+        "recommendedViableVersion": "5.0.1",
+        "minimumViableVersion": "5.0.1"
       }
     ])
   }, 30000)
