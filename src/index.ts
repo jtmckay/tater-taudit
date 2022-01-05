@@ -21,11 +21,22 @@ program.description('An application for fixing security vulnerabilities')
 .version('0.1.4')
 .option('-h, --help', 'Print out command options').addHelpText('after', `
   Examples:
+    $ tater-taudit log
+    -- List vulnerabilties and their dependents, with minimum viable version info.
+
     $ tater-taudit fix
       -- Upgrades all dependents down to the lowest dependency found in the audit with a dependency that has a fix available.
+`);
 
-    $ tater-taudit log
-      -- Creates a tree of all dependents, from the lowest dependency to the highest dependent, found in the audit.
+program
+  .command('log')
+  .description('Logs out a tree dependents of any packages identified in the audit')
+  .action(() => {
+    log()
+  }).addHelpText('after', `
+Examples:
+  $ tater-taudit log
+    -- Creates a tree of all dependents, from the lowest dependency to the highest dependent, found in the audit.
 `);
 
 program
@@ -52,17 +63,6 @@ program
       -- Upgrades all dependents down to the lowest dependency found in the audit with a dependency that has a fix available
     $ tater-taudit fix -m
       -- Upgrades all top level dependencies with a fix available that is not permitted by the current locked version
-`);
-
-program
-  .command('log')
-  .description('Logs out a tree dependents of any packages identified in the audit')
-  .action(() => {
-    log()
-  }).addHelpText('after', `
-Examples:
-  $ tater-taudit log
-    -- Creates a tree of all dependents, from the lowest dependency to the highest dependent, found in the audit.
 `);
 
 program.parse(process.argv);

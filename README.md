@@ -8,33 +8,19 @@ Requires npm and yarn to be globally installed, but works with package-lock.json
 Run commands in the directory containing your main package.json file.
 
 ## Getting Started
-If you've already upgraded to the latest version of everything, look at "When you want details" below.
+A great place to start is the "log" command. This is also the best path when updating everything to the latest is not resolving vulnerabilities.
 
-Find what packages need to be updated. In you package.json directory, run this command to get a list of commands that could be used to potentially resolve vulnerabilities:
-
-```
-npx tater-taudit@latest fix
-```
-
-Example output:
-```
-yarn upgrade svgo
-yarn upgrade css-select
-```
-
-Automatically run the recommended commands by passing "-a":
-
-```
-npx tater-taudit@latest fix -a
-```
-
-## When you want details
-
-The "log" command will give you the details of your project vulnerabilities and potential routes to fix. This is sometimes the best path forward to resolve dependencies that haven't made it up the tree to their parents yet.
+In your package.json directory, run this command to get the details of your project vulnerabilities and potential routes to fix.
 
 ```
 npx tater-taudit@latest log
 ```
+
+Note: piping the command to a file can sometimes be helpful when there are a lot of vulnerabilities. Some cleanup may be necessary to make it valid JSON. EG:
+```
+npx tater-taudit@latest log > taterlog.json
+```
+
 Example output:
 ```
 {
@@ -72,6 +58,26 @@ This example tells us that css-what is vulnerable, and patched in versions >=5.0
 It then continues to svgo, which depends on css-select, and so on. Using the fix command, you will end up with an upgrade command for each dependency found here with a viable version, and an install/add for each top level dependency with a viable version.
 
 If there is a fix available starting with multiple major versions, it will attempt to use the major version that you are currently using, before recommending the latest version.
+
+## Upgrade vulnerable packages
+
+Find what packages need to be updated. In your package.json directory, run this command to get a list of commands that could be used to potentially resolve vulnerabilities:
+
+```
+npx tater-taudit@latest fix
+```
+
+Example output:
+```
+yarn upgrade svgo
+yarn upgrade css-select
+```
+
+Automatically run the recommended commands by passing "-a":
+
+```
+npx tater-taudit@latest fix -a
+```
 
 ## Options
 ```

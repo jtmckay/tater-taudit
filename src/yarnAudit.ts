@@ -247,8 +247,8 @@ export async function buildTopLevelPackageList(): Promise<{npmList: NpmList, wor
   await Promise.all(Object.keys(baseNpmList.dependencies).map(async key => {
     const version = baseNpmList.dependencies[key].version
     if (baseNpmList.dependencies[key].resolved?.startsWith('file')) {
-      const workspace = baseNpmList.dependencies[key].resolved.replace(/^file:\.\.\//, '')
-      const workspaceNpmList = await getNpmList(`cd ${baseNpmList.dependencies[key].resolved.replace(/^file:\./, '')} &&`)
+      const workspace = baseNpmList.dependencies[key].resolved.replace(/^file:(\.\.\/){0,}/, '')
+      const workspaceNpmList = await getNpmList(`cd ${baseNpmList.dependencies[key].resolved.replace(/^file:(\.\.\/){0,}/, '')} &&`)
       Object.keys(workspaceNpmList.dependencies).forEach(workspaceKey => {
         workspaceList.push({ name: workspaceKey, version, workspace })
       })
