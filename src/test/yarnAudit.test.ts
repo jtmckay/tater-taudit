@@ -8,7 +8,8 @@ import {
   fillTreeViability,
   sortFlatDependentTree,
   upgradePackages,
-  upgradeMajorPackages
+  upgradeMajorPackages,
+  filterResults
 } from '../yarnAudit'
 import { testFlatTree, testNpmList, testYarnAudit } from './testData'
 
@@ -128,6 +129,7 @@ describe('buildTree', () => {
        ],
        "name": "redis",
        "patchedVersions": ">=3.1.1",
+       "severity": "low",
        "version": "2.6.5"
     },
     {
@@ -169,6 +171,7 @@ describe('buildTree', () => {
        ],
        "name": "redis",
        "patchedVersions": ">=3.1.1",
+       "severity": "low",
        "version": "2.8.0"
     }
  ]))
@@ -775,5 +778,156 @@ describe('upgradeMajorPackages', () => {
       {name: '@pluralsight/ps-design-system-icon', version: '^1.0.0'}
     ])
     expect(commandList).toEqual(["yarn add @pluralsight/ps-design-system-icon@^1.0.1 -W"])
+  })
+})
+
+describe('filterResults', () => {
+  it('filters a viable tree to include only branches with the given text', () => {
+    expect(filterResults([
+      {
+         "dependents": [
+            {
+               "dependents": [
+                  {
+                     "dependents": [
+                        {
+                           "dependents": [],
+                           "latestViableVersion": "23.1.14",
+                           "minimumViableVersion": "2.0.2",
+                           "name": "@pluralsight/ps-design-system-icon",
+                           "recommendedViableVersion": "23.1.14"
+                        }
+                     ],
+                     "latestViableVersion": "2.3.1",
+                     "minimumViableVersion": "0.0.1-2",
+                     "name": "svgo",
+                     "recommendedViableVersion": "2.3.1"
+                  }
+               ],
+               "latestViableVersion": "4.1.3",
+               "minimumViableVersion": "4.0.0",
+               "name": "css-select",
+               "recommendedViableVersion": "4.1.3"
+            }
+         ],
+         "name": "css-what",
+         "patchedVersions": ">=5.0.1",
+         "version": "3.4.2"
+      },
+      {
+         "dependents": [
+            {
+               "dependents": [
+                  {
+                     "dependents": [],
+                     "latestViableVersion": "23.1.14",
+                     "minimumViableVersion": "2.0.2",
+                     "name": "@pluralsight/ps-design-system-icon",
+                     "recommendedViableVersion": "23.1.14"
+                  }
+               ],
+               "latestViableVersion": "2.3.1",
+               "minimumViableVersion": "0.0.1-2",
+               "name": "svgo",
+               "recommendedViableVersion": "2.3.1"
+            }
+         ],
+         "latestViableVersion": "4.1.3",
+         "minimumViableVersion": "4.0.0",
+         "name": "css-select",
+         "recommendedViableVersion": "4.1.3"
+      },
+      {
+         "dependents": [
+            {
+               "dependents": [],
+               "latestViableVersion": "23.1.14",
+               "minimumViableVersion": "2.0.2",
+               "name": "@pluralsight/ps-design-system-icon",
+               "recommendedViableVersion": "23.1.14"
+            }
+         ],
+         "latestViableVersion": "2.3.1",
+         "minimumViableVersion": "0.0.1-2",
+         "name": "svgo",
+         "recommendedViableVersion": "2.3.1"
+      },
+      {
+         "dependents": [],
+         "latestViableVersion": "23.1.14",
+         "minimumViableVersion": "2.0.2",
+         "name": "@pluralsight/ps-design-system-icon",
+         "recommendedViableVersion": "23.1.14"
+      }
+   ], 'svgo')).toEqual([
+      {
+         "dependents": [
+            {
+               "dependents": [
+                  {
+                     "dependents": [
+                        {
+                           "dependents": [],
+                           "latestViableVersion": "23.1.14",
+                           "minimumViableVersion": "2.0.2",
+                           "name": "@pluralsight/ps-design-system-icon",
+                           "recommendedViableVersion": "23.1.14"
+                        }
+                     ],
+                     "latestViableVersion": "2.3.1",
+                     "minimumViableVersion": "0.0.1-2",
+                     "name": "svgo",
+                     "recommendedViableVersion": "2.3.1"
+                  }
+               ],
+               "latestViableVersion": "4.1.3",
+               "minimumViableVersion": "4.0.0",
+               "name": "css-select",
+               "recommendedViableVersion": "4.1.3"
+            }
+         ],
+         "name": "css-what",
+         "patchedVersions": ">=5.0.1",
+         "version": "3.4.2"
+      },
+      {
+         "dependents": [
+            {
+               "dependents": [
+                  {
+                     "dependents": [],
+                     "latestViableVersion": "23.1.14",
+                     "minimumViableVersion": "2.0.2",
+                     "name": "@pluralsight/ps-design-system-icon",
+                     "recommendedViableVersion": "23.1.14"
+                  }
+               ],
+               "latestViableVersion": "2.3.1",
+               "minimumViableVersion": "0.0.1-2",
+               "name": "svgo",
+               "recommendedViableVersion": "2.3.1"
+            }
+         ],
+         "latestViableVersion": "4.1.3",
+         "minimumViableVersion": "4.0.0",
+         "name": "css-select",
+         "recommendedViableVersion": "4.1.3"
+      },
+      {
+         "dependents": [
+            {
+               "dependents": [],
+               "latestViableVersion": "23.1.14",
+               "minimumViableVersion": "2.0.2",
+               "name": "@pluralsight/ps-design-system-icon",
+               "recommendedViableVersion": "23.1.14"
+            }
+         ],
+         "latestViableVersion": "2.3.1",
+         "minimumViableVersion": "0.0.1-2",
+         "name": "svgo",
+         "recommendedViableVersion": "2.3.1"
+      }
+    ])
   })
 })

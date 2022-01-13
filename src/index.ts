@@ -12,7 +12,8 @@ import {
   getYarnInfo,
   sortFlatDependentTree,
   upgradePackages,
-  upgradeMajorPackages
+  upgradeMajorPackages,
+  filterResults
 } from "./yarnAudit"
 
 const program = new Command();
@@ -31,8 +32,9 @@ program.description('An application for fixing security vulnerabilities')
 program
   .command('log')
   .description('Logs out a tree dependents of any packages identified in the audit')
-  .action(() => {
-    log()
+  .option('-f, --filter <filter>', 'Show only results containing text within the dependency tree')
+  .action(({ filter }: { filter: string }) => {
+    log(filter)
   }).addHelpText('after', `
 Examples:
   $ tater-taudit log
@@ -134,7 +136,7 @@ export async function main(options: CommandOptions) {
   }
 }
 
-export async function log() {
+export async function log(filter?: string) {
   const initialYarnAudits = await getYarnAudits()
   const {npmList} = await buildTopLevelPackageList()
 
@@ -143,5 +145,5 @@ export async function log() {
 
   const viableTree = await fillTreeViability(tree, yarnInfo, npmList)
 
-  console.log(JSON.stringify(viableTree, null, 2))
+  console.log(JSON.stringify(filterResults(viableTree, filter), null, 2))
 }

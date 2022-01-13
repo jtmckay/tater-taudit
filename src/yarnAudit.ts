@@ -164,6 +164,7 @@ export type PackageDependency = {
   name: string
   version?: string
   patchedVersions?: string
+  severity?: string
   earliestExistingVersion?: string
   minimumViableVersion?: string
   recommendedViableVersion?: string
@@ -286,6 +287,7 @@ export function buildTree (yarnAudits: Array<YarnAudit>): Array<PackageDependenc
       const npmPackage: PackageDependency = {
         dependents: [],
         name: yarnAudit.data.advisory.module_name,
+        severity: yarnAudit.data.advisory.severity,
         patchedVersions: yarnAudit.data.advisory.patched_versions,
       }
       yarnAudit.data.advisory.findings.forEach((finding) => {
@@ -453,7 +455,13 @@ export async function fillViableVersions (npmPackage: PackageDependency, depende
 }
 
 // lowerDependency: meaning lower level dependency, but higher in the reverse tree
-export async function fillTreeViability (tree: Array<PackageDependency>, yarnInfo: YarnInfo, npmList: NpmList, npmPackageDependent?: PackageDependency, lowerDependency?: PackageDependency): Promise<Array<PackageDependency>> {
+export async function fillTreeViability (
+  tree: Array<PackageDependency>,
+  yarnInfo: YarnInfo,
+  npmList: NpmList,
+  npmPackageDependent?: PackageDependency,
+  lowerDependency?: PackageDependency
+  ): Promise<Array<PackageDependency>> {
   if (npmPackageDependent && lowerDependency) {
     await fillViableVersions(npmPackageDependent, lowerDependency, yarnInfo, npmList)
   } else if (npmPackageDependent) {
@@ -490,6 +498,22 @@ export function sortFlatDependentTree (tree: Array<PackageDependency>): Array<Pa
     }
     return -1
   })
+}
+
+export function filterResults (viableTree: PackageDependency[], filter?: string, include?: boolean) {
+  if (!filter) {
+    return viableTree
+  }
+  const regex = new RegExp(filter)
+  const newTree: PackageDependency[] = []
+  viableTree.forEach(branch => {
+    let isMatch = regex.test(branch.name)
+    const newDependents = filterResults(branch.dependents, filter, include || isMatch)
+    if (include || isMatch || newDependents.length) {
+      newTree.push({ ...branch, dependents: newDependents })
+    }
+  })
+  return newTree
 }
 
 export async function upgradePackages (commandFunction: Function, npmCommands: boolean, sortedFlatTree: Array<PackageDependency>) {
