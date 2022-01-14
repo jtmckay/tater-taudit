@@ -87,6 +87,9 @@ describe('isItGreaterOrEqual', () => {
   describe('when given a greater major version', () => {
     it('returns true', () => expect(isItGreaterOrEqual([4, 0, 0], [2, 1, 0])).toBe(true))
   });
+  describe('when given a greater major version', () => {
+    it('returns false', () => expect(isItGreaterOrEqual(['1', '9', '1'], ['1', '14', '7'])).toBe(false))
+  });
 })
 
 describe('buildTree', () => {
