@@ -516,6 +516,42 @@ export function filterResults (viableTree: PackageDependency[], filter?: string,
   return newTree
 }
 
+export function filterSeverity (viableTree: PackageDependency[], { critical, low }: { critical?: boolean, low?: boolean }): PackageDependency[] {
+  if (!critical && !low) {
+    return viableTree
+  }
+  return viableTree.filter(i => {
+    switch (i.severity) {
+      case 'critical':
+        if (critical) {
+          return true
+        } else {
+          return false
+        }
+      case 'high':
+        if (critical) {
+          return true
+        } else {
+          return false
+        }
+      case 'moderate':
+        if (low) {
+          return true
+        } else {
+          return false
+        }
+      case 'low':
+        if (low) {
+          return true
+        } else {
+          return false
+        }
+      default:
+        return true
+    }
+  })
+}
+
 export async function upgradePackages (commandFunction: Function, npmCommands: boolean, sortedFlatTree: Array<PackageDependency>) {
   const upgradeList = new Set<string>()
   sortedFlatTree.filter(i => i.minimumViableVersion).forEach(i => upgradeList.add(i.name))

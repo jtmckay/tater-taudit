@@ -9,7 +9,8 @@ import {
   sortFlatDependentTree,
   upgradePackages,
   upgradeMajorPackages,
-  filterResults
+  filterResults,
+  filterSeverity
 } from '../yarnAudit'
 import { testFlatTree, testNpmList, testYarnAudit } from './testData'
 
@@ -927,6 +928,124 @@ describe('filterResults', () => {
          "minimumViableVersion": "0.0.1-2",
          "name": "svgo",
          "recommendedViableVersion": "2.3.1"
+      }
+    ])
+  })
+})
+
+describe('filterSeverity', () => {
+  it('filters a viable tree to include only branches with the given text', () => {
+    expect(filterSeverity([
+      {
+         "dependents": [
+            {
+               "dependents": [
+                  {
+                     "dependents": [
+                        {
+                           "dependents": [],
+                           "latestViableVersion": "23.1.14",
+                           "minimumViableVersion": "2.0.2",
+                           "name": "@pluralsight/ps-design-system-icon",
+                           "recommendedViableVersion": "23.1.14"
+                        }
+                     ],
+                     "latestViableVersion": "2.3.1",
+                     "minimumViableVersion": "0.0.1-2",
+                     "name": "svgo",
+                     "recommendedViableVersion": "2.3.1"
+                  }
+               ],
+               "latestViableVersion": "4.1.3",
+               "minimumViableVersion": "4.0.0",
+               "name": "css-select",
+               "recommendedViableVersion": "4.1.3"
+            }
+         ],
+         "name": "css-what",
+         "severity": "high",
+         "patchedVersions": ">=5.0.1",
+         "version": "3.4.2"
+      },
+      {
+         "dependents": [
+            {
+               "dependents": [
+                  {
+                     "dependents": [],
+                     "latestViableVersion": "23.1.14",
+                     "minimumViableVersion": "2.0.2",
+                     "name": "@pluralsight/ps-design-system-icon",
+                     "recommendedViableVersion": "23.1.14"
+                  }
+               ],
+               "latestViableVersion": "2.3.1",
+               "minimumViableVersion": "0.0.1-2",
+               "name": "svgo",
+               "recommendedViableVersion": "2.3.1"
+            }
+         ],
+         "latestViableVersion": "4.1.3",
+         "minimumViableVersion": "4.0.0",
+         "name": "css-select",
+         "severity": "low",
+         "recommendedViableVersion": "4.1.3"
+      },
+      {
+         "dependents": [
+            {
+               "dependents": [],
+               "latestViableVersion": "23.1.14",
+               "minimumViableVersion": "2.0.2",
+               "name": "@pluralsight/ps-design-system-icon",
+               "recommendedViableVersion": "23.1.14"
+            }
+         ],
+         "latestViableVersion": "2.3.1",
+         "minimumViableVersion": "0.0.1-2",
+         "name": "svgo",
+         "severity": "moderate",
+         "recommendedViableVersion": "2.3.1"
+      },
+      {
+         "dependents": [],
+         "latestViableVersion": "23.1.14",
+         "minimumViableVersion": "2.0.2",
+         "name": "@pluralsight/ps-design-system-icon",
+         "severity": "low",
+         "recommendedViableVersion": "23.1.14"
+      }
+   ], { critical: true })).toEqual([
+      {
+         "dependents": [
+            {
+               "dependents": [
+                  {
+                     "dependents": [
+                        {
+                           "dependents": [],
+                           "latestViableVersion": "23.1.14",
+                           "minimumViableVersion": "2.0.2",
+                           "name": "@pluralsight/ps-design-system-icon",
+                           "recommendedViableVersion": "23.1.14"
+                        }
+                     ],
+                     "latestViableVersion": "2.3.1",
+                     "minimumViableVersion": "0.0.1-2",
+                     "name": "svgo",
+                     "recommendedViableVersion": "2.3.1"
+                  }
+               ],
+               "latestViableVersion": "4.1.3",
+               "minimumViableVersion": "4.0.0",
+               "name": "css-select",
+               "recommendedViableVersion": "4.1.3"
+            }
+         ],
+         "name": "css-what",
+         "severity": "high",
+         "patchedVersions": ">=5.0.1",
+         "version": "3.4.2"
       }
     ])
   })
