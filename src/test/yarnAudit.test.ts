@@ -10,7 +10,8 @@ import {
   upgradePackages,
   upgradeMajorPackages,
   filterResults,
-  filterSeverity
+  filterSeverity,
+  cleanPackageVersion
 } from '../yarnAudit'
 import { testFlatTree, testNpmList, testYarnAudit } from './testData'
 
@@ -1051,5 +1052,17 @@ describe('filterSeverity', () => {
          "version": "3.4.2"
       }
     ])
+  })
+})
+
+describe('cleanPackageVersion', () => {
+  it('returns useful package version', () => {
+    expect(cleanPackageVersion('1.14.7')).toEqual([1, 14, 7])
+  })
+  it('returns useful package version', () => {
+    expect(cleanPackageVersion('1.0.0')).toEqual([1, 0, 0])
+  })
+  it('returns useful package version', () => {
+    expect(cleanPackageVersion('>=2.0.3')).toEqual([2, 0, 3])
   })
 })

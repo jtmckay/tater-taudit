@@ -192,7 +192,7 @@ type PackageVersion = [
   string | number
 ]
 export function cleanPackageVersion (version: string): PackageVersion {
-  const [a, b, c] = version.replace(/[^0-9.Xx]*/g, '.').split('.').filter(i => i !== '').map(i => {
+  const [a, b, c] = version.replace(/[^0-9.Xx]+/g, '.').split('.').filter(i => i !== '').map(i => {
     const integer = parseInt(i)
     if (isNaN(integer)) {
       return i
