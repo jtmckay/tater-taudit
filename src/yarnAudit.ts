@@ -348,21 +348,30 @@ function isString(test: number | string) {
   return typeof(test) === 'string'
 }
 
+function isItGreaterOrEqualWithPadded0s (first: string | number, second: string | number) {
+  const firstArray = Array.from(first.toString())
+  const secondArray = Array.from(second.toString())
+  const maxLength = Math.max(firstArray.length, secondArray.length)
+  const comparableFirst = [new Array(maxLength - firstArray.length).fill('0'), ...firstArray].join('')
+  const comparableSecond = [new Array(maxLength - secondArray.length).fill('0'), ...secondArray].join('')
+  return comparableFirst >= comparableSecond
+}
+
 export function isItGreaterOrEqual ([major, minor, patch]: PackageVersion, comparable: PackageVersion): boolean {
   if (!comparable) return true
   const [comparableMajor, comparableMinor, comparablePatch] = comparable
 
-  if (isString(major)) return true
+  if (isString(major)) return isItGreaterOrEqualWithPadded0s(major, comparableMajor)
 
   if (major > comparableMajor) {
     return true
   } else if (major === comparableMajor) {
-    if (isString(minor)) return true
+    if (isString(minor)) return isItGreaterOrEqualWithPadded0s(minor, comparableMinor)
 
     if (minor > comparableMinor) {
       return true
     } else if (minor === comparableMinor) {
-      if (isString(patch)) return true
+      if (isString(patch)) return isItGreaterOrEqualWithPadded0s(patch, comparableMinor)
 
       return patch >= comparablePatch
     }
@@ -441,7 +450,7 @@ export async function fillViableVersions (npmPackage: PackageDependency, depende
           if (!packageInfo) return false
           return isValid(packageInfo, dependency.name, requiredMinimumViableVersion)
         })
-        if (possibleSameMajorVersion) {
+        if (possibleSameMajorVersion && (cleanPackageVersion(possibleSameMajorVersion)[0] !== cleanPackageVersion(recommendedViableVersion)[0] || isItGreaterOrEqual(cleanPackageVersion(possibleSameMajorVersion), cleanPackageVersion(recommendedViableVersion)))) {
           recommendedViableVersion = possibleSameMajorVersion
         }
       }
