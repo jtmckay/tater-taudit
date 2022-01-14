@@ -364,24 +364,16 @@ export function isItGreaterOrEqual ([major, minor, patch]: PackageVersion, compa
   if (!comparable) return true
   const [comparableMajor, comparableMinor, comparablePatch] = comparable
 
-  if (isString(major) || isString(comparableMajor)) {
-    return isNumberStringGreater(major, comparableMajor)
-  }
-
-  if (major > comparableMajor) {
+  // Either major is a string and the first is greater, or neither is a string and the first is greater
+  if ((((isString(major) || isString(comparableMajor)) && isNumberStringGreater(major, comparableMajor))) || (!isString(major) && !isString(comparableMajor) && major > comparableMajor)) {
     return true
-  } else if (major === comparableMajor) {
-    if (isString(minor) || isString(comparableMinor)) {
-      return isNumberStringGreater(minor, comparableMinor)
-    }
-
-    if (minor > comparableMinor) {
+  } else if (major == comparableMajor) {
+    // Either minor is a string and the first is greater, or neither is a string and the first is greater
+    if (((isString(minor) || isString(comparableMinor)) && isNumberStringGreater(minor, comparableMinor)) || ((!isString(minor) && !isString(comparableMinor)) && minor > comparableMinor)) {
       return true
-    } else if (minor === comparableMinor) {
-      if (isString(patch) || isString(comparablePatch)) {
-        return isNumberStringGreater(patch, comparablePatch)
-      }
-      return patch >= comparablePatch
+    } else if (minor == comparableMinor) {
+    // Either patch is a string and the first is greater, or neither is a string and the first is greater
+    return ((isString(patch) || isString(comparablePatch)) && isNumberStringGreater(patch, comparablePatch)) || ((!isString(patch) && !isString(comparablePatch)) && patch >= comparablePatch)
     }
   }
   return false
