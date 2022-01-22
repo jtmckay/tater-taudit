@@ -1,6 +1,10 @@
+![npm (scoped)](https://img.shields.io/npm/v/tater-taudit?label=NPM) ![NPM](https://img.shields.io/npm/l/tater-taudit?label=License) ![npm](https://img.shields.io/npm/dt/tater-taudit?label=Downloads)
+
 # Security vulnerability assistant
 
 Resolve security vulnerabilities found with yarn audit (Dependabot or npm audit). Automatically fix them when possible, and get assistance when not. It will walk the tree of dependencies to find the best path forward.
+
+![](https://github.com/jtmckay/tater-taste/blob/HEAD/client/public/tater.svg)
 
 ## Requirements
 Requires npm and yarn to be globally installed, but works with package-lock.json or yarn.lock files.
